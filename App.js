@@ -10,7 +10,7 @@ import AllSet from "./screens/onBoard/AllSet";
 import Settings from "./screens/settings/Settings";
 import AddInvoice from "./screens/invoice/addinvoice";
 import SelectClient from "./screens/clients/SelectClients";
-import InvoiceForm from "./components/invoice/InvoiceForm";
+import InvoiceForm from "./components/invoice/Form/InvoiceForm";
 import InvoicesContectProvider from "./store/invoices-context";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 export default function App() {

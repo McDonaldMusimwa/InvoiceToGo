@@ -3,7 +3,7 @@ import { useState } from "react";
 import colors from "../../../const/Colors";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
-import InvoiceForm from '../../../components/invoice/InvoiceForm'
+import InvoiceForm from '../../../components/invoice/Form/InvoiceForm'
 
 function AddInvoice() {
   const [value, setValue] = useState(null);

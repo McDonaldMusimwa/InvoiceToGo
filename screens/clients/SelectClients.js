@@ -1,21 +1,23 @@
 import { View, Text, FlatList, StyleSheet } from "react-native";
+import { useState } from "react";
 import ClientForInvoice from "../../components/client/clientForInvoice";
 import { clients } from "../../const/Data";
 import { useNavigation, useRoute } from "@react-navigation/native";
 function SelectClient() {
+
+  const route = useRoute()
   const navigation = useNavigation();
 
   function selectHandler(id) {
     const selectedClient = clients.find((client) => client.id === id);
-    // Pass the selected client back to the previous screen
-    navigation.setParams({ client: selectedClient });
-
+    route.params.onGoBack(selectedClient.name)
     navigation.goBack();
+
   }
 
   return (
     <View style={styles.clientContainer}>
-      <Text>Any body home ?</Text>
+
 
       <FlatList
         data={clients}

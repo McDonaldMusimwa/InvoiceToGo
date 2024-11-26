@@ -8,20 +8,16 @@ import {
 } from "react-native";
 import { useState } from "react";
 import Input from "./Input";
-import colors from "../../const/Colors";
+import colors from "../../../const/Colors";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
-import { useRoute } from "@react-navigation/native";
-//import { clients } from "../../const/Data";
-//import ClientForInvoice from "../client/clientForInvoice";
+import ClientInput from "./ClientInput";
+import InvoiceElements from "./InvoiceElements";
+import DiscountTotal from "./DiscountTotal";
+import Button from "../../UI/Button";
 
 function InvoiceForm() {
-  const route = useRoute()
-
-  const selectedClient = route.params?.client;
-  console.log(route)
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   //const [clientModal, setClientModal] = useState(false);
@@ -52,6 +48,25 @@ function InvoiceForm() {
     }));
   }
 
+  function extractElements(key, elements) {
+    inputHandler(()=>key, elements);
+  }
+
+  function submitForm() {
+    const isValid = validateInputs(invoiceInput);
+    if (!isValid) {
+      alert("Please complete all required fields");
+      return;
+    }
+  
+    // Call API or save locally
+    console.log("Submitting invoice:", invoiceInput);
+  }
+
+  function validateInputs(inputs) {
+    // Check required fields
+    return inputs.clientname && inputs.invoicenumber && inputs.invoicedate;
+  }
   return (
     <View style={styles.invoiceFormContainer}>
       {/* Row for Invoice Number and Invoice Date */}
@@ -77,48 +92,34 @@ function InvoiceForm() {
           visible={modalVisible}
           onRequestClose={() => setModalVisible(false)}
         >
-          <View style={styles.dateContainer}>
-            <DateTimePicker
-              mode="single"
-              date={invoiceInput.invoicedate}
-              onChange={(params) => {
-                inputHandler("invoicedate", params.date);
-              }}
-            />
+          <View style={styles.centeredView}>
+            <View style={styles.dateContainer}>
+              <DateTimePicker
+                mode="single"
+                date={invoiceInput.invoicedate}
+                onChange={(params) => {
+                  inputHandler("invoicedate", params.date);
+                }}
+              />
+              <Pressable onPress={() => setModalVisible(false)}>
+                <Text style={styles.closeModalText}>Close</Text>
+              </Pressable>
+            </View>
           </View>
-          <Pressable onPress={() => setModalVisible(false)}>
-            <Text style={styles.closeModalText}>Close</Text>
-          </Pressable>
         </Modal>
       </View>
 
       {/* Input for Client Name */}
-      <View style={styles.inputBackground}>
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Selectclient')
-          }}
-          style={styles.datePressable}
-        >
-          <Text style={styles.clientnameText}>
-            Client name
-            <AntDesign name="down" size={20} color="black" />
-          </Text>
-        </Pressable>
-        <Input />
-      </View>
+      <ClientInput inputHandler={inputHandler} />
 
-      
+      <InvoiceElements extractElements={extractElements} />
+      <DiscountTotal extractDiscountData={extractElements} elements={invoiceInput.invoiceelements}/>
+      <Button color='blue' onPress={submitForm}>Save</Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  clientnameText: {
-    alignContent: "center",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   invoiceFormContainer: {
     marginTop: 10,
     flexDirection: "column", // Stack elements vertically
@@ -171,6 +172,31 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     padding: 20,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+  },
+  modalView: {
+    width: "95%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 
