@@ -12,7 +12,7 @@ import { useState } from "react";
 import colors from "../../../const/Colors";
 import Element from "../Form/Element/Element";
 
-function InvoiceElements({extractElements}) {
+function InvoiceElements(props) {
   const [modalState, setModalState] = useState(false);
   const [elements, setElements] = useState([]);
   const [element, setElement] = useState({
@@ -29,10 +29,12 @@ function InvoiceElements({extractElements}) {
   }
 
   function submitElement() {
-    setElements((current) => [...current, element]);
+    const updatedElements = [...elements, element];
+    console.log("invoice elements" + JSON.stringify(updatedElements))
+    setElements(updatedElements);
     setElement({ item: "", units: "", costperitem: "" }); // Reset form
-    extractElements("invoiceelements", elements);
-    setModalState(false); // Close modal after submission
+    props.extractElements(updatedElements); // Use the updated array
+    setModalState(false); // Close modal
   }
 
   function calculateElementTotal(total, element) {
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
   },
 
   subTotal: {
-    padding: 15,
+    padding: 5,
     fontWeight: "bold",
     fontSize: 15,
     justifyContent: "space-between",

@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: "absolute",
     bottom: 10,
-    left: width / 4,
+    left: width / 3,
     zIndex: 100,
     alignItems: "center",
     padding: 10, // Adjust padding as needed

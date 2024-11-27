@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet,SafeAreaView } from "react-native";
 import { useState } from "react";
 import Add from "./addInvoice/AddInvoice";
 import Preview from "./addInvoice/Preview";
@@ -25,6 +25,7 @@ function AddInvoice({ navigation }) {
   };
 
   return (
+   
     <View style={styles.addInvoiceContainer}>
       <View style={styles.AddInvoiceNavigate}>
         <View
@@ -51,13 +52,15 @@ function AddInvoice({ navigation }) {
 
       {screen}
     </View>
+  
   );
 }
 
 const styles = StyleSheet.create({
   addInvoiceContainer: {
     flex: 1,
-    marginTop: 10,
+    marginTop: 1,
+    
   },
   AddInvoiceNavigate: {
     flexDirection: "row",

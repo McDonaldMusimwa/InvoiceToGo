@@ -4,9 +4,11 @@ import {
   Text,
   Modal,
   Pressable,
-  FlatList,
+  TextInput,
 } from "react-native";
-import { useState } from "react";
+import Dropdown from "react-native-input-select";
+import { taxRate } from "../../../const/Data";
+import { useState, useEffect, useMemo } from "react";
 import Input from "./Input";
 import colors from "../../../const/Colors";
 import DateTimePicker from "react-native-ui-datepicker";
@@ -17,63 +19,91 @@ import InvoiceElements from "./InvoiceElements";
 import DiscountTotal from "./DiscountTotal";
 import Button from "../../UI/Button";
 
+const initialState = {
+  clientname: "",
+  invoicenumber: "",
+  invoicestatus: "",
+  invoicedate: dayjs(), // Always initialize as a Day.js object
+  invoiceelements: [],
+  discount: "",
+  tax: "",
+};
+
 function InvoiceForm() {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   //const [clientModal, setClientModal] = useState(false);
-  const [invoiceInput, setInvoiceInput] = useState({
-    clientname: "",
-    invoicenumber: "",
-    invoicestatus: "",
-    invoicedate: dayjs(),
-    invoiceelements: [
-      {
-        item: "",
-        units: "",
-        costperunit: "",
-      },
-    ],
-    discount: "",
-    tax: "",
-    payments: "",
-    balancedue: "",
-    paymentinfo: "",
-    signature: "",
-  });
+  const [elements, setinvoiceElements] = useState([]);
+  const [invoiceInput, setInvoiceInput] = useState(initialState);
 
   function inputHandler(key, input) {
     setInvoiceInput((prevState) => ({
       ...prevState,
-      [key]: input,
+      [key]: key === "invoicedate" ? dayjs(input || dayjs()) : input,
     }));
   }
 
-  function extractElements(key, elements) {
-    inputHandler(()=>key, elements);
+  function extractElements(elementsArray) {
+    console.log("Extracted elements:", elementsArray);
+    setinvoiceElements(elementsArray); // Set state with the latest elements
   }
 
+  function extractClientName(name) {
+    inputHandler("clientname", name);
+  }
+  //console.log("Updated elements:", JSON.stringify(elements, null, 2));
+
   function submitForm() {
-    const isValid = validateInputs(invoiceInput);
-    if (!isValid) {
-      alert("Please complete all required fields");
-      return;
-    }
-  
-    // Call API or save locally
-    console.log("Submitting invoice:", invoiceInput);
+    if (!validateInputs(invoiceInput)) return;
+
+    const formData = {
+      ...invoiceInput,
+      invoiceelements: elements,
+      tax: taxAmount.toFixed(2),
+      balancedue: total.toFixed(2),
+    };
+    console.log("Submitting invoice:", formData);
+
+    setInvoiceInput(initialState);
+    setinvoiceElements([]);
   }
 
   function validateInputs(inputs) {
     // Check required fields
     return inputs.clientname && inputs.invoicenumber && inputs.invoicedate;
   }
+
+  const subtotal = useMemo(
+    () =>
+      elements.reduce(
+        (total, item) => total + Number(item.units) * Number(item.costperitem),
+        0
+      ),
+    [elements]
+  );
+
+  const taxAmount = useMemo(
+    () => (taxRate / 100) * (subtotal - Number(invoiceInput.discount || 0)),
+    [subtotal, invoiceInput.discount]
+  );
+
+  const total = useMemo(
+    () => subtotal - Number(invoiceInput.discount || 0) + taxAmount,
+    [subtotal, invoiceInput.discount, taxAmount]
+  );
+
+  console.log("Current invoicedate:", invoiceInput.invoicedate);
+
   return (
     <View style={styles.invoiceFormContainer}>
       {/* Row for Invoice Number and Invoice Date */}
       <View style={[styles.invDateandNum, styles.inputBackground]}>
-        <Input
-          label="Invoice Number"
-          style={styles.rowInput} // Ensure consistent width
+        <Text>Invoice number</Text>
+        <TextInput
+          placeholder="inv45"
+          onChangeText={(invoicenumber) =>
+            inputHandler("invoicenumber", invoicenumber)
+          }
         />
         <Pressable
           onPress={() => setModalVisible(true)}
@@ -96,11 +126,17 @@ function InvoiceForm() {
             <View style={styles.dateContainer}>
               <DateTimePicker
                 mode="single"
-                date={invoiceInput.invoicedate}
+                date={
+                  invoiceInput.invoicedate
+                    ? invoiceInput.invoicedate.toDate()
+                    : dayjs().toDate()
+                }
                 onChange={(params) => {
-                  inputHandler("invoicedate", params.date);
+                  const selectedDate = params.date || dayjs();
+                  inputHandler("invoicedate", selectedDate);
                 }}
               />
+
               <Pressable onPress={() => setModalVisible(false)}>
                 <Text style={styles.closeModalText}>Close</Text>
               </Pressable>
@@ -110,11 +146,76 @@ function InvoiceForm() {
       </View>
 
       {/* Input for Client Name */}
-      <ClientInput inputHandler={inputHandler} />
+      <ClientInput inputHandler={extractClientName} />
 
       <InvoiceElements extractElements={extractElements} />
-      <DiscountTotal extractDiscountData={extractElements} elements={invoiceInput.invoiceelements}/>
-      <Button color='blue' onPress={submitForm}>Save</Button>
+
+      {/* discount area */}
+      <View style={styles.inputBackground}>
+        <View style={styles.discountView}>
+          <Text>Discount</Text>
+
+          <TextInput
+            style={styles.input}
+            onChangeText={(disc) => inputHandler("discount", disc)}
+            keyboardType="numeric"
+            returnKeyType={"next"}
+          />
+        </View>
+        <View style={styles.line}></View>
+        <View style={styles.discountView}>
+          <Text>Tax </Text>
+          {console.log("elements to disocunt " + JSON.stringify(elements))}
+          {elements && elements.length > 0 ? (
+            <Text style={styles.input}>{taxAmount}</Text>
+          ) : (
+            <Text style={styles.input}></Text>
+          )}
+        </View>
+
+        <View style={styles.line}></View>
+        <View style={styles.discountView}>
+          <Text>Total</Text>
+          <Text style={styles.input}>{total}</Text>
+        </View>
+
+        {/* 
+                     <View style={styles.line}></View>
+        <View style={styles.discountView}>
+          <Text>Payments</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            returnKeyType={"next"}
+          />
+        </View>
+        <View style={styles.line}></View>
+
+        <View style={styles.discountView}>
+          <Text>Balance due</Text>
+          <TextInput style={styles.input} />
+        </View>
+        */}
+      </View>
+      <View style={[styles.invoicestatus, styles.inputBackground]}>
+        <Dropdown
+          label="Invoice Status"
+          placeholder="Select an option..."
+          options={[
+            { label: "paid", value: "paid" },
+            { label: "unpaid", value: "unpaid" },
+          ]}
+          selectedValue={invoiceInput.invoicestatus}
+          onValueChange={(value) => inputHandler("invoicestatus", value)}
+          primaryColor={"blue"}
+        />
+      </View>
+
+      <View style={styles.submitButtonContainer}>
+        <Button color="blue" onPress={submitForm}>
+          Save
+        </Button>
+      </View>
     </View>
   );
 }
@@ -127,7 +228,7 @@ const styles = StyleSheet.create({
   },
   inputBackground: {
     backgroundColor: colors.white,
-    padding: 10,
+    padding: 5,
     borderRadius: 8,
   },
   invDateandNum: {
@@ -141,7 +242,7 @@ const styles = StyleSheet.create({
     marginRight: 10, // Add spacing between the Input and Date Picker
   },
   datePressable: {
-    paddingVertical: 10,
+    paddingVertical: 5,
     paddingHorizontal: 15,
     borderWidth: 1,
     borderColor: colors.gray,
@@ -197,6 +298,51 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  submitButtonContainer: {
+    marginTop: 15,
+  },
+
+  /* Discount Area */
+
+  inputBackground: {
+    marginTop: 10,
+    backgroundColor: colors.white,
+    padding: 10,
+    borderRadius: 8,
+  },
+  inputContainer: {
+    backgroundColor: colors.white,
+    height: 150,
+    width: "80%",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: "10%",
+    marginBottom: 20,
+  },
+  input: {
+    width: "70%",
+    textAlign: "right",
+    height: 50,
+    fontSize: 20,
+  },
+  line: {
+    backgroundColor: colors.gray,
+    height: 1,
+    width: "100%",
+  },
+  discountView: {
+    padding: 1,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  invoicestatus: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 5,
+    padding: 5,
   },
 });
 

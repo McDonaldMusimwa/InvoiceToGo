@@ -3,7 +3,7 @@ import colors from "../../../const/Colors";
 import Input from "./Input";
 
 function DiscountTotal({ extractDiscountData,elements }) {
-    console.log(elements)
+
   return (
     <View style={styles.inputBackground}>
       <View style={styles.discountView}>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   discountView: {
-    padding: 5,
+    padding: 1,
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",

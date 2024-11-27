@@ -168,4 +168,5 @@ export const clients = [
   },
 ];
 
+export const taxRate = 15;
 export default invoices;

@@ -20,7 +20,7 @@ function AddInvoice() {
 
 const styles = StyleSheet.create({
   addInvoiceContainer: {
-    marginTop: 10,
+    marginTop: 5,
     flex: 1,
     backgroundColor: colors.gray,
   },

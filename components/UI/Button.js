@@ -29,11 +29,11 @@ function Button({ children, onPress, color }) {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    borderRadius: 8,
+    borderRadius: 10,
     backgroundColor: colors.white,
     padding: 20,
-    width: "80%",
-    marginHorizontal: "10%",
+    width: "100%",
+
     justifyContent: "center",
   },
   blueButton: {
