@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Main from "../../screens/main/main";
 import Clients from "../../screens/clients/Clients";
-import Elements from "../../screens/elements/Elements";
+import Settings from "../../screens/settings/Settings";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 const BottomTab = createBottomTabNavigator();
@@ -39,9 +39,9 @@ function BottomNavigatorTab() {
       />
       <BottomTab.Screen
         name="Elements"
-        component={Elements}
+        component={Settings}
         options={{
-          title: "Elements",
+          title: "Settings",
           tabBarLabel: "Elements",
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="cube-outline" size={size} color={color} />

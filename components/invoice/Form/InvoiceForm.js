@@ -5,6 +5,9 @@ import {
   Modal,
   Pressable,
   TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import Dropdown from "react-native-input-select";
 import { taxRate } from "../../../const/Data";
@@ -44,7 +47,7 @@ function InvoiceForm() {
   }
 
   function extractElements(elementsArray) {
-    console.log("Extracted elements:", elementsArray);
+    //console.log("Extracted elements:", elementsArray);
     setinvoiceElements(elementsArray); // Set state with the latest elements
   }
 
@@ -92,94 +95,103 @@ function InvoiceForm() {
     [subtotal, invoiceInput.discount, taxAmount]
   );
 
-  console.log("Current invoicedate:", invoiceInput.invoicedate);
+  //console.log("Current invoicedate:", invoiceInput.invoicedate);
 
   return (
-    <View style={styles.invoiceFormContainer}>
-      {/* Row for Invoice Number and Invoice Date */}
-      <View style={[styles.invDateandNum, styles.inputBackground]}>
-        <Text>Invoice number</Text>
-        <TextInput
-          placeholder="inv45"
-          onChangeText={(invoicenumber) =>
-            inputHandler("invoicenumber", invoicenumber)
-          }
-        />
-        <Pressable
-          onPress={() => setModalVisible(true)}
-          style={styles.datePressable}
-        >
-          <Text>Invoice Due</Text>
-          <Text style={styles.dateLabel}>
-            {invoiceInput.invoicedate.format("YYYY-MM-DD")}
-          </Text>
-        </Pressable>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.invoiceFormContainer}>
+          {/* Row for Invoice Number and Invoice Date */}
+          <View style={[styles.invDateandNum, styles.inputBackground]}>
+            <Text>Invoice number</Text>
+            <TextInput
+              style={styles.invoicenumber}
+              placeholder="inv45"
+              onChangeText={(invoicenumber) =>
+                inputHandler("invoicenumber", invoicenumber)
+              }
+            />
+            <Pressable
+              onPress={() => setModalVisible(true)}
+              style={styles.datePressable}
+            >
+              <Text>Invoice Due</Text>
+              <Text style={styles.dateLabel}>
+                {invoiceInput.invoicedate.format("YYYY-MM-DD")}
+              </Text>
+            </Pressable>
 
-        {/* Modal for Date Picker */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.dateContainer}>
-              <DateTimePicker
-                mode="single"
-                date={
-                  invoiceInput.invoicedate
-                    ? invoiceInput.invoicedate.toDate()
-                    : dayjs().toDate()
-                }
-                onChange={(params) => {
-                  const selectedDate = params.date || dayjs();
-                  inputHandler("invoicedate", selectedDate);
-                }}
-              />
+            {/* Modal for Date Picker */}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => setModalVisible(false)}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.dateContainer}>
+                  <DateTimePicker
+                    mode="single"
+                    date={
+                      invoiceInput.invoicedate
+                        ? invoiceInput.invoicedate.toDate()
+                        : dayjs().toDate()
+                    }
+                    onChange={(params) => {
+                      const selectedDate = params.date || dayjs();
+                      inputHandler("invoicedate", selectedDate);
+                    }}
+                  />
 
-              <Pressable onPress={() => setModalVisible(false)}>
-                <Text style={styles.closeModalText}>Close</Text>
-              </Pressable>
-            </View>
+                  <Pressable onPress={() => setModalVisible(false)}>
+                    <Text style={styles.closeModalText}>Close</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </Modal>
           </View>
-        </Modal>
-      </View>
 
-      {/* Input for Client Name */}
-      <ClientInput inputHandler={extractClientName} />
+          {/* Input for Client Name */}
+          <ClientInput inputHandler={extractClientName} />
 
-      <InvoiceElements extractElements={extractElements} />
+          <InvoiceElements extractElements={extractElements} />
 
-      {/* discount area */}
-      <View style={styles.inputBackground}>
-        <View style={styles.discountView}>
-          <Text>Discount</Text>
+          {/* discount area */}
+          <View style={styles.inputBackground}>
+            <View style={styles.discountView}>
+              <Text>Discount</Text>
 
-          <TextInput
-            style={styles.input}
-            onChangeText={(disc) => inputHandler("discount", disc)}
-            keyboardType="numeric"
-            returnKeyType={"next"}
-          />
-        </View>
-        <View style={styles.line}></View>
-        <View style={styles.discountView}>
-          <Text>Tax </Text>
-          {console.log("elements to disocunt " + JSON.stringify(elements))}
-          {elements && elements.length > 0 ? (
-            <Text style={styles.input}>{taxAmount}</Text>
-          ) : (
-            <Text style={styles.input}></Text>
-          )}
-        </View>
+              <TextInput
+                style={styles.input}
+                onChangeText={(disc) => inputHandler("discount", disc)}
+                keyboardType="numeric"
+                returnKeyType={"next"}
+              />
+            </View>
+            <View style={styles.line}></View>
+            <View style={styles.discountView}>
+              <Text>Tax </Text>
+              {console.log("elements to disocunt " + JSON.stringify(elements))}
+              {elements && elements.length > 0 ? (
+                <Text style={styles.input}>{taxAmount}</Text>
+              ) : (
+                <Text style={styles.input}></Text>
+              )}
+            </View>
 
-        <View style={styles.line}></View>
-        <View style={styles.discountView}>
-          <Text>Total</Text>
-          <Text style={styles.input}>{total}</Text>
-        </View>
+            <View style={styles.line}></View>
+            <View style={styles.discountView}>
+              <Text>Total</Text>
+              <Text style={styles.input}>{total}</Text>
+            </View>
 
-        {/* 
+            {/* 
                      <View style={styles.line}></View>
         <View style={styles.discountView}>
           <Text>Payments</Text>
@@ -196,31 +208,40 @@ function InvoiceForm() {
           <TextInput style={styles.input} />
         </View>
         */}
-      </View>
-      <View style={[styles.invoicestatus, styles.inputBackground]}>
-        <Dropdown
-          label="Invoice Status"
-          placeholder="Select an option..."
-          options={[
-            { label: "paid", value: "paid" },
-            { label: "unpaid", value: "unpaid" },
-          ]}
-          selectedValue={invoiceInput.invoicestatus}
-          onValueChange={(value) => inputHandler("invoicestatus", value)}
-          primaryColor={"blue"}
-        />
-      </View>
+          </View>
+          <View style={[styles.invoicestatus, styles.inputBackground]}>
+            <Dropdown
+              label="Invoice Status"
+              placeholder="Select an option..."
+              options={[
+                { label: "paid", value: "paid" },
+                { label: "unpaid", value: "unpaid" },
+              ]}
+              selectedValue={invoiceInput.invoicestatus}
+              onValueChange={(value) => inputHandler("invoicestatus", value)}
+              primaryColor={"blue"}
+            />
+          </View>
 
-      <View style={styles.submitButtonContainer}>
-        <Button color="blue" onPress={submitForm}>
-          Save
-        </Button>
-      </View>
-    </View>
+          <View style={styles.submitButtonContainer}>
+            <Button color="blue" onPress={submitForm}>
+              Save
+            </Button>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  invoicenumber: {
+    borderColor: colors.gray,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 13,
+  },
   invoiceFormContainer: {
     marginTop: 10,
     flexDirection: "column", // Stack elements vertically

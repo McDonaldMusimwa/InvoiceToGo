@@ -159,12 +159,14 @@ export const clients = [
     phone: "067 103 3055",
     email: "jonathan@gmail.com",
     id: 1,
+    comments:"Works at Singular systems hire me for washing machine"
   },
   {
     name: "Bait Dot",
     phone: "021 164  1035",
     email: "bait@gmail.com",
     id: 2,
+    comments:"Works at forver living hired me for fixing microwave"
   },
 ];
 

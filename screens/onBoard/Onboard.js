@@ -37,13 +37,14 @@ const styles = StyleSheet.create({
   onBoardContainer: {
     backgroundColor: colors.bluelight2,
     flex: 1,
+    padding:20
   },
   imageContainer: {
-    marginTop: 40,
+    marginTop: 20,
   },
   boldCaption: {
     fontWeight: "bold",
-    fontSize: 65,
+    fontSize: 55,
     color: colors.white,
     marginVertical: 1,
     marginHorizontal: 20,
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: colors.white,
     marginHorizontal: 20,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   loginText: {
     color: colors.white,

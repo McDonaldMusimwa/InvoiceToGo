@@ -5,7 +5,18 @@ import colors from "../../const/Colors";
 import * as ImagePicker from "expo-image-picker";
 import Octicons from "@expo/vector-icons/Octicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Input from "../../components/invoice/Form/Input";
+const initialCompanyState = {
+   
+  companyname: defaultCompany ? defaultCompany.companyname : "",
+  email: defaultCompany ? defaultCompany.email : "",
+  address1: defaultCompany ? defaultCompany.address1 : "",
+  address2: defaultCompany ? defaultCompany.address2 : "",
+  taxRate: defaultCompany ? defaultCompany.taxRate : "",
+};
+
 function CreateCompany({ navigation }) {
+  const [company, setCompany] = useState(initialCompanyState);
   const [image, setImage] = useState("");
 
   const pickImage = async () => {
@@ -23,8 +34,19 @@ function CreateCompany({ navigation }) {
       setImage(result.assets[0].uri);
     }
   };
-
+function inputHandler(key,value){
+  setCompany((current)=>({
+    ...current,[key]:value
+  }))
+}
   function navigateToAllScreen() {
+    const companyData ={
+      email:company.email,
+      image:image,
+      taxRate:company.taxRate,
+      address1:company.address1,
+      address2:company.address2
+  }
     navigation.navigate("AllSet");
   }
   return (
@@ -38,17 +60,21 @@ function CreateCompany({ navigation }) {
           </Pressable>
         </View>
         <View style={styles.companyNameContainer}>
-          <TextInput placeholder="Company name" style={styles.input} />
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput placeholder="email@gmail.com" style={styles.input} />
+          <TextInput placeholder="Company name" style={styles.input}  onChangeText={(value)=> inputHandler('companyname',value)}/>
           <View style={styles.line}></View>
-          <TextInput placeholder="password" style={styles.input} />
+          <TextInput placeholder="email@gmail.com" style={styles.input} onChangeText={(value)=> inputHandler('email',value)}/>
+       
         </View>
+      
         <View style={styles.inputContainer}>
-          <TextInput placeholder="Adsress line 1" style={styles.input} />
+          <TextInput placeholder="Address line 1" style={styles.input} onChangeText={(value)=> inputHandler('address1',value)}/>
           <View style={styles.line}></View>
-          <TextInput placeholder="Address line 2" style={styles.input} />
+          <TextInput placeholder="Address line 2" style={styles.input}  onChangeText={(value)=> inputHandler('address2',value)}/>
+        </View>
+        <View >
+        <Input textInputConfig={{
+          onChangeText:(value)=>{inputHandler('taxRate',value)}
+        }}/>
         </View>
         <View style={styles.nextButtonContainer}>
           <Button color="blue" onPress={navigateToAllScreen}>
@@ -64,6 +90,7 @@ function CreateCompany({ navigation }) {
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
+    padding:10
   },
   loginInsideContainer: {
     marginTop: 150,
@@ -94,7 +121,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   line: {
-    backgroundColor: colors.black,
+    backgroundColor: colors.gray,
     height: 1,
     width: "80%",
   },
@@ -108,7 +135,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   nextButtonContainer: {
-    marginTop: 25,
+    marginTop: 10,
+    padding: 20,
   },
 });
 export default CreateCompany;

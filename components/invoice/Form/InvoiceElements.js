@@ -7,6 +7,7 @@ import {
   Modal,
   Pressable,
   FlatList,
+  ScrollView
 } from "react-native";
 import { useState } from "react";
 import colors from "../../../const/Colors";
@@ -120,6 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 8,
+    
   },
   line: {
     backgroundColor: colors.gray,

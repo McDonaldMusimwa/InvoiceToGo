@@ -1,21 +1,52 @@
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import colors from "../../const/Colors";
 import Button from "../../components/UI/Button";
+import { useState } from "react";
+var bcrypt = require("bcryptjs");
 
-function Login({navigation}) {
-  function loginHandler(){
-    navigation.navigate('MainTabs')
+function Login({ navigation }) {
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
+
+  function inputHandler(key, value) {
+    setInput((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
+  function loginHandler() {
+    const formData = {
+      email: input.email,
+      password: bcrypt.hash(input),
+    };
+
+    navigation.navigate("Previous");
   }
   return (
     <View style={styles.loginContainer}>
       <View style={styles.loginInsideContainer}>
         <Text style={styles.loginText}>Login</Text>
         <View style={styles.inputContainer}>
-          <TextInput placeholder="email@gmail.com" style={styles.input} />
+          <TextInput
+            placeholder="email@gmail.com"
+            style={styles.input}
+            onChangeText={(email) => inputHandler("email", email)}
+          />
           <View style={styles.line}></View>
-          <TextInput placeholder="password" style={styles.input} />
+          <TextInput
+            placeholder="password"
+            style={styles.input}
+            onChangeText={(password) => inputHandler("password", password)}
+          />
         </View>
-        <Button color='blue' onPress={loginHandler}>Login</Button>
+        <View style={styles.buttonContainer}>
+          <Button color="blue" onPress={loginHandler}>
+            Login
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -26,9 +57,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.gray,
     marginTop: 50,
+    padding: 10,
   },
   loginInsideContainer: {
-    marginTop:150
+    marginTop: 150,
   },
   loginText: {
     fontWeight: "bold",
@@ -37,25 +69,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   line: {
-    backgroundColor: colors.black,
+    backgroundColor: colors.gray,
     height: 1,
     width: "80%",
   },
   inputContainer: {
     backgroundColor: colors.white,
     height: 150,
-    width: "80%",
+
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: "10%",
+    marginHorizontal: "5%",
     marginBottom: 20,
   },
   input: {
-    width: "100%",
     textAlign: "center",
     height: 50,
     fontSize: 20,
+  },
+  buttonContainer: {
+    marginTop: 10,
+    padding: 20,
   },
 });
 export default Login;

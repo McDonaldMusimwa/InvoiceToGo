@@ -13,6 +13,7 @@ import SelectClient from "./screens/clients/SelectClients";
 import InvoiceForm from "./components/invoice/Form/InvoiceForm";
 import InvoicesContectProvider from "./store/invoices-context";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import ManageClient from "./screens/clients/ManageClient";
 export default function App() {
   const Stack = createNativeStackNavigator();
 
@@ -22,16 +23,7 @@ export default function App() {
       <InvoicesContectProvider>
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen
-              name="MainTabs"
-              component={BottomNavigatorTab}
-              options={{
-                headerShown:false,
-                headerLeft: () => {
-                  <FontAwesome5 name="search" size={24} color="black" />;
-                },
-              }} // Hide the default header for Bottom Tabs
-            />
+            
 
             <Stack.Screen
               name="Onboard"
@@ -69,6 +61,24 @@ export default function App() {
               name="Selectclient"
               component={SelectClient}
               options={{ title: "Select Client" }}
+            />
+
+            <Stack.Screen
+              name="ManageClient"
+              component={ManageClient}
+              options={{
+                title: "",
+              }}
+            />
+            <Stack.Screen
+              name="Previous"
+              component={BottomNavigatorTab}
+              options={{
+                headerShown: false,
+                headerLeft: () => {
+                  <FontAwesome5 name="search" size={24} color="black" />;
+                },
+              }} // Hide the default header for Bottom Tabs
             />
           </Stack.Navigator>
         </NavigationContainer>

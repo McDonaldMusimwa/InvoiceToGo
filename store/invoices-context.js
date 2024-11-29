@@ -1,5 +1,5 @@
 import { createContext, useReducer } from "react";
-import invoices from "../const/Data";
+import invoices, { clients } from "../const/Data";
 export const InvoicesContext = createContext({
   invoices: [],
   addInvoice: ({
@@ -32,6 +32,10 @@ export const InvoicesContext = createContext({
       signature,
     }
   ) => {},
+  clients: [],
+  addClient: ({ clientname, clientphone, clientemail, comments }) => {},
+  updateClient: (id, { clientname, clientphone, clientemail, comments }) => {},
+  deleteCleint: ({ id }) => {},
 });
 
 function invoicesReducer(state, action) {
@@ -54,9 +58,30 @@ function invoicesReducer(state, action) {
       return state;
   }
 }
-
+/* Clients reducer */
+function clientsReducer(state, action) {
+  switch (action.type) {
+    case "ADD":
+      const id = new Date().toString() + Math.random().toString();
+      return [{ ...action.payload, id: id }, ...state];
+    case "DELETE":
+      return state.filter((client) => client.id !== action.payload);
+    case "UPDATE":
+      const updateDatableClientIndex = state.findIndex(
+        (client) => client.id === action.payload.id
+      );
+      const updatableClient = state[updateDatableClientIndex];
+      const updatedClient = { ...updatableClient, ...action.payload.data };
+      const updatedClients = [...state];
+      updatedClients[updateDatableClientIndex] = updatedClient;
+      return updatedClients;
+    default:
+      return state;
+  }
+}
 function InvoicesContectProvider({ children }) {
   const [invoicesState, dispatch] = useReducer(invoicesReducer, invoices);
+  const [clientsState, release] = useReducer(clientsReducer, clients);
   function addInvoice(invoiceData) {
     dispatch({ type: "ADD", payload: invoiceData });
   }
@@ -68,15 +93,36 @@ function InvoicesContectProvider({ children }) {
   function updateInvoice(id, invoiceData) {
     dispatch({ type: "UPDATE", payload: { id: id, data: invoiceData } });
   }
-const value = {
-    invoices:invoicesState,
-    addInvoice:addInvoice,
-    deleteInvoice:deleteInvoice,
-    updateInvoice:updateInvoice
 
-}
+  /* Client Logic */
+  function addClient(clientData) {
+    release({ type: "ADD", payload: clientData });
+  }
 
-  return <InvoicesContext.Provider value={value}>{children}</InvoicesContext.Provider>;
+  function deleteClient(id) {
+    release({ type: "DELETE", payload: id });
+  }
+
+  function updateClient(id, clientData) {
+    release({ type: "UPDATE", payload: { id: id, data: clientData } });
+  }
+
+  const value = {
+    invoices: invoicesState,
+    addInvoice: addInvoice,
+    deleteInvoice: deleteInvoice,
+    updateInvoice: updateInvoice,
+    clients:clientsState,
+    addClient,
+    deleteClient,
+    updateClient,
+  };
+
+  return (
+    <InvoicesContext.Provider value={value}>
+      {children}
+    </InvoicesContext.Provider>
+  );
 }
 
 export default InvoicesContectProvider;

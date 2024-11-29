@@ -1,26 +1,22 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import colors from "../../../const/Colors";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-function ClientInput({inputHandler}) {
+function ClientInput({ inputHandler }) {
   const [client, setClient] = useState("");
   const navigation = useNavigation();
-  useEffect(( )=>{
-    if(client)inputHandler(client) 
-
-
-  },[client])
+  useEffect(() => {
+    if (client) inputHandler(client);
+  }, [client]);
   return (
     <View style={styles.inputBackground}>
       <Pressable
         onPress={() => {
           navigation.navigate("Selectclient", {
             onGoBack: (clientData) => {
-             
               setClient(clientData);
-       
             },
           });
         }}
@@ -29,8 +25,8 @@ function ClientInput({inputHandler}) {
         <Text style={styles.clientnameText}>
           For : {client}
           {"                                     "}
-          <AntDesign name="right" size={20} color="black" />
         </Text>
+        <AntDesign name="right" size={20} color="black" />
       </Pressable>
     </View>
   );
@@ -43,6 +39,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   clientInputPressable: {
+    alignItems:'center',
+    flexDirection:'row',
     paddingVertical: 5,
     paddingHorizontal: 15,
     justifyContent: "space-between",
