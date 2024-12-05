@@ -1,31 +1,29 @@
-import { View, Text, StyleSheet,SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import { useState } from "react";
 import Add from "./addInvoice/AddInvoice";
-import Preview from "./addInvoice/Preview";
 import colors from "../../const/Colors";
+import Modify from "./modify/Modify";
 
-function AddInvoice({ navigation }) {
+function ManageInvoice({ route, navigation }) {
   const [addScreenNavigate, setNavigate] = useState("add");
 
+  //console.log("Manage screen", JSON.stringify(route.params));
   // Simplifying the screen logic
-  const screen =
-    addScreenNavigate === "add" ? (
-      <Add  />
-    ) : (
-      <Preview  />
-    );
+
 
   const navigateHandler = {
     add: () => {
       setNavigate("add");
     },
     preview: () => {
+     
       setNavigate("preview");
     },
   };
 
+  const screen = addScreenNavigate === "add" ? <Add extractInvoiceData={navigateHandler.preview} /> : <Modify navigation={navigation}/>;
+
   return (
-   
     <View style={styles.addInvoiceContainer}>
       <View style={styles.AddInvoiceNavigate}>
         <View
@@ -35,7 +33,7 @@ function AddInvoice({ navigation }) {
           ]}
         >
           <Text onPress={navigateHandler.add} style={styles.centeredText}>
-            Settings
+            Add Invoice
           </Text>
         </View>
         <View
@@ -45,14 +43,13 @@ function AddInvoice({ navigation }) {
           ]}
         >
           <Text onPress={navigateHandler.preview} style={styles.centeredText}>
-            Preview
+          Modify
           </Text>
         </View>
       </View>
 
       {screen}
     </View>
-  
   );
 }
 
@@ -60,7 +57,6 @@ const styles = StyleSheet.create({
   addInvoiceContainer: {
     flex: 1,
     marginTop: 1,
-    
   },
   AddInvoiceNavigate: {
     flexDirection: "row",
@@ -83,4 +79,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddInvoice;
+export default ManageInvoice;

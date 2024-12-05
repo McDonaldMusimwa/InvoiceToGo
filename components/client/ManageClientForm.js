@@ -47,6 +47,7 @@ function ManageClientForm({
       comments: input.comments,
     };
     onSubmitHandler(submitData);
+    setInputHandler(initialInputState)
   }
 
   return (
@@ -89,7 +90,7 @@ function ManageClientForm({
         label="Comments"
         style={styles.rowInput}
         textInputConfig={{
-          maxLength: 20,
+          maxLength: 50,
           onChangeText: inputHandler.bind(this, "comments"),
           value: input.comments,
           multiLine: true,

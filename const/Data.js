@@ -3,8 +3,10 @@ const invoices = [
   {
     id: 1,
     invoicenumber: 1058,
-    customer: "Acmo Co",
+    clientname: "Acmo Co",
     status: "paid",
+    invoicedate:"",
+    
     elements: [
       {
         units: 2,
@@ -16,8 +18,9 @@ const invoices = [
   {
     id: 2,
     invoicenumber: 1059,
-    customer: "Beta Ltd",
+    clientname: "Beta Ltd",
     status: "paid",
+    invoicedate:"",
     elements: [
       {
         units: 5,
@@ -34,8 +37,9 @@ const invoices = [
   {
     id: 3,
     invoicenumber: 1060,
-    customer: "Gamma Inc",
+   clientname: "Gamma Inc",
     status: "paid",
+    invoicedate:"",
     elements: [
       {
         units: 10,
@@ -47,8 +51,9 @@ const invoices = [
   {
     id: 4,
     invoicenumber: 1061,
-    customer: "Delta Co",
+   clientname: "Delta Co",
     status: "paid",
+    invoicedate:"",
     elements: [
       {
         units: 3,
@@ -65,8 +70,9 @@ const invoices = [
   {
     id: 5,
     invoicenumber: 1062,
-    customer: "Epsilon Ltd",
+    clientname: "Epsilon Ltd",
     status: "paid",
+    invoicedate:"",
     elements: [
       {
         units: 4,
@@ -79,8 +85,9 @@ const invoices = [
   {
     id: 6,
     invoicenumber: 1063,
-    customer: "Zeta Co",
+    clientname: "Zeta Co",
     status: "unpaid",
+    invoicedate:"",
     elements: [
       {
         units: 6,
@@ -92,8 +99,8 @@ const invoices = [
   {
     id: 7,
     invoicenumber: 1064,
-    customer: "Eta Inc",
-    status: "unpaid",
+   clientname: "Eta Inc",
+    status: "unpaid",invoicedate:"",
     elements: [
       {
         units: 8,
@@ -110,8 +117,9 @@ const invoices = [
   {
     id: 8,
     invoicenumber: 1065,
-    customer: "Theta Ltd",
+   clientname: "Theta Ltd",
     status: "unpaid",
+    invoicedate:"",
     elements: [
       {
         units: 3,
@@ -123,8 +131,9 @@ const invoices = [
   {
     id: 9,
     invoicenumber: 1066,
-    customer: "Iota Co",
+    clientname: "Iota Co",
     status: "unpaid",
+    invoicedate:"",
     elements: [
       {
         units: 7,
@@ -136,8 +145,9 @@ const invoices = [
   {
     id: 10,
     invoicenumber: 1067,
-    customer: "Kappa Inc",
+    clientname: "Kappa Inc",
     status: "unpaid",
+    invoicedate:"",
     elements: [
       {
         units: 2,

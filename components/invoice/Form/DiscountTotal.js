@@ -1,6 +1,6 @@
 import { View, StyleSheet, TextInput, Text } from "react-native";
 import colors from "../../../const/Colors";
-import Input from "./Input";
+
 
 function DiscountTotal({ extractDiscountData,elements }) {
 

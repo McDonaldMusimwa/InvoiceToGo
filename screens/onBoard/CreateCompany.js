@@ -6,16 +6,25 @@ import * as ImagePicker from "expo-image-picker";
 import Octicons from "@expo/vector-icons/Octicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Input from "../../components/invoice/Form/Input";
-const initialCompanyState = {
-   
-  companyname: defaultCompany ? defaultCompany.companyname : "",
-  email: defaultCompany ? defaultCompany.email : "",
-  address1: defaultCompany ? defaultCompany.address1 : "",
-  address2: defaultCompany ? defaultCompany.address2 : "",
-  taxRate: defaultCompany ? defaultCompany.taxRate : "",
-};
+import { taxRate } from "../../const/Data";
+;
 
 function CreateCompany({ navigation }) {
+  const defaultCompany = {
+    email:"",
+    address1:"",
+    address2:"",
+    taxRate:"",
+    companyname:""
+  }
+  const initialCompanyState = {
+   
+    companyname: defaultCompany ? defaultCompany.companyname : "",
+    email: defaultCompany ? defaultCompany.email : "",
+    address1: defaultCompany ? defaultCompany.address1 : "",
+    address2: defaultCompany ? defaultCompany.address2 : "",
+    taxRate: defaultCompany ? defaultCompany.taxRate : "",
+  }
   const [company, setCompany] = useState(initialCompanyState);
   const [image, setImage] = useState("");
 

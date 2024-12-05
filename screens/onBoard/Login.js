@@ -11,18 +11,37 @@ function Login({ navigation }) {
   });
 
   function inputHandler(key, value) {
-    setInput((current) => ({
-      ...current,
-      [key]: value,
-    }));
+    if (key === "password") {
+      bcrypt.genSalt(10, function (err, salt) {
+        if (err) {
+          console.error("Error generating salt:", err);
+          return;
+        }
+        bcrypt.hash(value, salt, function (err, hash) {
+          if (err) {
+            console.error("Error hashing password:", err);
+            return;
+          }
+          setInput((current) => ({
+            ...current,
+            [key]: hash,
+          }));
+        });
+      });
+    } else {
+      setInput((current) => ({
+        ...current,
+        [key]: value,
+      }));
+    }
   }
 
   function loginHandler() {
     const formData = {
       email: input.email,
-      password: bcrypt.hash(input),
+      password: input.password,
     };
-
+    console.log(formData);
     navigation.navigate("Previous");
   }
   return (
@@ -34,6 +53,8 @@ function Login({ navigation }) {
             placeholder="email@gmail.com"
             style={styles.input}
             onChangeText={(email) => inputHandler("email", email)}
+            autoComplete="email"
+            autoCapitalize="none"
           />
           <View style={styles.line}></View>
           <TextInput

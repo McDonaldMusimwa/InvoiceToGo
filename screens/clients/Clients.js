@@ -1,20 +1,35 @@
-import { View, Text, StyleSheet, Pressable, FlatList,Dimensions } from "react-native";
-import { useContext,useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  Dimensions,
+} from "react-native";
+import { useContext, useState, useEffect } from "react";
 import colors from "../../const/Colors";
 import { InvoicesContext } from "../../store/invoices-context";
 import ClientForInvoice from "../../components/client/clientForInvoice";
 import Button from "../../components/UI/Button";
+import { fetchClients } from "../../util/https";
 const width = Dimensions.get("window").width;
 
 function ClientInput({ navigation }) {
-const clientCtx = useContext(InvoicesContext)
-    const clients = clientCtx.clients;
+  const clientCtx = useContext(InvoicesContext);
+  const clients = clientCtx.clients;
+  useEffect(()=>{
+    async function getClients(){
+      const clients =await fetchClients()
+      clientCtx.setClients(clients)
+    }
 
+    getClients
+  },[])
 
   function selectHandler(id) {
     const selectedClient = clients.find((client) => client.id === id);
-   
-    navigation.navigate('ManageClient',{params:selectedClient});
+
+    navigation.navigate("ManageClient", { params: selectedClient });
   }
   return (
     <View style={styles.inputBackground}>
@@ -33,22 +48,21 @@ const clientCtx = useContext(InvoicesContext)
       />
 
       <View style={styles.buttonContainer}>
-      <Button
-        onPress ={() => {
-          
-          navigation.navigate("ManageClient");
-        }}
-        color="blue"
-      >
-        Add Client +
-      </Button>
-    </View>
+        <Button
+          onPress={() => {
+            navigation.navigate("ManageClient");
+          }}
+          color="blue"
+        >
+          Add Client +
+        </Button>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    buttonContainer: {
+  buttonContainer: {
     position: "absolute",
     bottom: 10,
     left: width / 3,
@@ -60,7 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray,
     padding: 10,
     borderRadius: 8,
-    flex:1
+    flex: 1,
   },
   clientInputPressable: {
     alignItems: "center",

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
-import { useState,useContext } from "react";
+import { useState, useContext,useEffect } from "react";
 import invoices from "../../const/Data";
 import { Dimensions } from "react-native";
 import colors from "../../const/Colors";
@@ -8,23 +8,40 @@ import Octicons from "@expo/vector-icons/Octicons";
 import Button from "../../components/UI/Button";
 import Invoice from "../../components/UI/Invoice";
 import { InvoicesContext } from "../../store/invoices-context";
+import { fetchInvoices } from "../../util/https";
 const width = Dimensions.get("window").width;
+
+
 function Main({ navigation }) {
-  const invoices = useContext(InvoicesContext)
-  const allinvoices = invoices.invoices
-  const [filteredInvoices, setFilteredInvoices] = useState(allinvoices);
+  const invoicesCtx = useContext(InvoicesContext);
+  const [filteredInvoices, setFilteredInvoices] = useState(invoicesCtx.invoices);
   const [screen, setScreen] = useState("all");
+
+
+  useEffect(() => {
+    async function getInvoices() {
+      console.log("trying to fetch")
+        const invoices = await fetchInvoices();
+        console.log(invoices)
+        invoicesCtx.setInvoices(invoices);
+    
+    }
+    
+    getInvoices();
+  }, []); 
+
+
 
   const navigateHandlers = {
     navigateToUnpaid: () => {
-      const invoices = allinvoices.filter(
+      const invoices = invoicesCtx.invoices.filter(
         (invoice) => invoice.status === "unpaid"
       );
       setScreen("unpaid");
       setFilteredInvoices(invoices);
     },
     navigateToPaid: () => {
-      const invoices = allinvoices.filter(
+      const invoices = invoicesCtx.invoices.filter(
         (invoice) => invoice.status === "paid"
       );
       setScreen("paid");
@@ -32,7 +49,7 @@ function Main({ navigation }) {
     },
     navigateToAll: () => {
       setScreen("all");
-      setFilteredInvoices(allinvoices);
+      setFilteredInvoices(invoicesCtx.invoices);
     },
   };
 
@@ -44,14 +61,14 @@ function Main({ navigation }) {
     );
 
     const onPressNavigate = () => {
-      navigation.navigate("InvoiceItem");
+      navigation.navigate("ManageInvoice", { invoiceid: item.id });
     };
     return (
       <Invoice
         invoicenumber={item.invoicenumber}
         subTotal={subTotal}
         status={item.status}
-        customer={item.customer}
+        customer={item.clientname}
         onPressAction={onPressNavigate}
       />
     );
@@ -95,9 +112,8 @@ function Main({ navigation }) {
 
       <View style={styles.buttonContainer}>
         <Button
-          onPress ={() => {
-            
-            navigation.navigate("Addinvoice");
+          onPress={() => {
+            navigation.navigate("Manage");
           }}
           color="blue"
         >

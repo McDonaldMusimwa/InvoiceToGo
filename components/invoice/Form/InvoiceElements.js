@@ -7,7 +7,6 @@ import {
   Modal,
   Pressable,
   FlatList,
-  ScrollView
 } from "react-native";
 import { useState } from "react";
 import colors from "../../../const/Colors";
@@ -17,6 +16,7 @@ function InvoiceElements(props) {
   const [modalState, setModalState] = useState(false);
   const [elements, setElements] = useState([]);
   const [element, setElement] = useState({
+    id: "",
     item: "",
     units: "",
     costperitem: "",
@@ -31,7 +31,6 @@ function InvoiceElements(props) {
 
   function submitElement() {
     const updatedElements = [...elements, element];
-    console.log("invoice elements" + JSON.stringify(updatedElements))
     setElements(updatedElements);
     setElement({ item: "", units: "", costperitem: "" }); // Reset form
     props.extractElements(updatedElements); // Use the updated array
@@ -49,7 +48,7 @@ function InvoiceElements(props) {
       {/* Display Added Elements */}
       <FlatList
         data={elements}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item}
         renderItem={({ item }) => (
           <Element
             units={item.units}
@@ -70,7 +69,10 @@ function InvoiceElements(props) {
               style={styles.input}
               placeholder="Item"
               value={element.item}
-              onChangeText={(text) => addInvoiceElement("item", text)}
+              onChangeText={(text) => {
+                addInvoiceElement("id", text);
+                addInvoiceElement("item", text);
+              }}
             />
             <TextInput
               style={styles.input}
@@ -121,7 +123,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 8,
-    
   },
   line: {
     backgroundColor: colors.gray,

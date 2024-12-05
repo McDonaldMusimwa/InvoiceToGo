@@ -6,11 +6,10 @@ import FlatButton from "../../components/UI/FlatButton";
 
 function Onboard({ navigation }) {
   function navigateToLogin() {
-    console.log(navigation);
     navigation.navigate("Login");
   }
-  function navigateToCreateCompany(){
-    navigation.navigate('CreateCompany')
+  function navigateToCreateCompany() {
+    navigation.navigate("CreateCompany");
   }
   return (
     <View style={styles.onBoardContainer}>
@@ -27,7 +26,8 @@ function Onboard({ navigation }) {
       </Text>
       <Button onPress={navigateToCreateCompany}>Start your work</Button>
       <Text style={styles.loginText}>
-        Already have an account ? <FlatButton onPress={navigateToLogin}>Login</FlatButton>
+        Already have an account ?{" "}
+        <FlatButton onPress={navigateToLogin}>Login</FlatButton>
       </Text>
     </View>
   );
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   onBoardContainer: {
     backgroundColor: colors.bluelight2,
     flex: 1,
-    padding:20
+    padding: 20,
   },
   imageContainer: {
     marginTop: 20,
@@ -58,9 +58,11 @@ const styles = StyleSheet.create({
   loginText: {
     color: colors.white,
     marginHorizontal: 20,
-    marginTop: 20,
+    marginTop: 10,
     fontSize: 20,
     textAlign: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
   },
 });
 

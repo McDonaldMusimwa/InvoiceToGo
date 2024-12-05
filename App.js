@@ -8,12 +8,13 @@ import Onboard from "./screens/onBoard/Onboard";
 import CreateCompany from "./screens/onBoard/CreateCompany";
 import AllSet from "./screens/onBoard/AllSet";
 import Settings from "./screens/settings/Settings";
-import AddInvoice from "./screens/invoice/addinvoice";
+import AddInvoice from "./screens/invoice/manageInvoice";
 import SelectClient from "./screens/clients/SelectClients";
-import InvoiceForm from "./components/invoice/Form/InvoiceForm";
 import InvoicesContectProvider from "./store/invoices-context";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import ManageClient from "./screens/clients/ManageClient";
+import ModifyInvoice from "./screens/invoice/modify/ModifyInvoice";
+//import InvoiceForm from './components/invoice/InvoiceForm'
 export default function App() {
   const Stack = createNativeStackNavigator();
 
@@ -23,8 +24,7 @@ export default function App() {
       <InvoicesContectProvider>
         <NavigationContainer>
           <Stack.Navigator>
-            
-
+            {/*  
             <Stack.Screen
               name="Onboard"
               component={Onboard}
@@ -45,7 +45,7 @@ export default function App() {
               component={CreateCompany}
               options={{ headerShown: false }}
             />
-
+*/}
             <Stack.Screen
               name="AllSet"
               component={AllSet}
@@ -53,9 +53,9 @@ export default function App() {
             />
             <Stack.Screen name="Settings" component={Settings} />
             <Stack.Screen
-              name="Addinvoice"
+              name="Manage"
               component={AddInvoice}
-              options={{ title: "Add invoice" }}
+              options={{ title: "Manage invoices" }}
             />
             <Stack.Screen
               name="Selectclient"
@@ -80,6 +80,8 @@ export default function App() {
                 },
               }} // Hide the default header for Bottom Tabs
             />
+            <Stack.Screen name="ManageInvoice" component={AddInvoice} />
+            <Stack.Screen name="ModifyInvoice" component={ModifyInvoice} />
           </Stack.Navigator>
         </NavigationContainer>
       </InvoicesContectProvider>

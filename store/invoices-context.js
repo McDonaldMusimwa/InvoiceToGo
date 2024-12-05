@@ -1,5 +1,5 @@
 import { createContext, useReducer } from "react";
-import invoices, { clients } from "../const/Data";
+
 export const InvoicesContext = createContext({
   invoices: [],
   addInvoice: ({
@@ -16,6 +16,7 @@ export const InvoicesContext = createContext({
     signature,
   }) => {},
   deleteInvoice: (id) => {},
+  setInvoices: (invoices) => {},
   updateInvoice: (
     id,
     {
@@ -36,6 +37,7 @@ export const InvoicesContext = createContext({
   addClient: ({ clientname, clientphone, clientemail, comments }) => {},
   updateClient: (id, { clientname, clientphone, clientemail, comments }) => {},
   deleteCleint: ({ id }) => {},
+  setClients: (clients) => {},
 });
 
 function invoicesReducer(state, action) {
@@ -45,6 +47,10 @@ function invoicesReducer(state, action) {
       return [{ ...action.payload, id: id }, ...state];
     case "DELETE":
       return state.filter((invoice) => invoice.id !== action.payload);
+
+    case "SET":
+      return action.payload;
+
     case "UPDATE":
       const updateDatableInvoiceIndex = state.findIndex(
         (invoice) => invoice.id === action.payload.id
@@ -75,17 +81,24 @@ function clientsReducer(state, action) {
       const updatedClients = [...state];
       updatedClients[updateDatableClientIndex] = updatedClient;
       return updatedClients;
+
+    case "SET":
+      return action.payload;
+
     default:
       return state;
   }
 }
 function InvoicesContectProvider({ children }) {
-  const [invoicesState, dispatch] = useReducer(invoicesReducer, invoices);
-  const [clientsState, release] = useReducer(clientsReducer, clients);
+  const [invoicesState, dispatch] = useReducer(invoicesReducer, []);
+  const [clientsState, release] = useReducer(clientsReducer, []);
   function addInvoice(invoiceData) {
     dispatch({ type: "ADD", payload: invoiceData });
   }
 
+  function setInvoices(invoices) {
+    dispatch({ type: "SET", payload: invoices });
+  }
   function deleteInvoice(id) {
     dispatch({ type: "DELETE", payload: id });
   }
@@ -97,6 +110,13 @@ function InvoicesContectProvider({ children }) {
   /* Client Logic */
   function addClient(clientData) {
     release({ type: "ADD", payload: clientData });
+  }
+
+  function setClients(clients) {
+    release({
+      type: "SET",
+      payload: clients,
+    });
   }
 
   function deleteClient(id) {
@@ -112,10 +132,12 @@ function InvoicesContectProvider({ children }) {
     addInvoice: addInvoice,
     deleteInvoice: deleteInvoice,
     updateInvoice: updateInvoice,
-    clients:clientsState,
-    addClient,
-    deleteClient,
-    updateClient,
+    setInvoices: setInvoices,
+    clients: clientsState,
+    addClient: addClient,
+    deleteClient: deleteClient,
+    updateClient: updateClient,
+    setClients: setClients,
   };
 
   return (
