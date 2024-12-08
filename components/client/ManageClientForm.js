@@ -11,10 +11,10 @@ function ManageClientForm({
   defaultValue,
 }) {
   const initialInputState = {
-    clientname: defaultValue?.params.name || "",
-    clientphone: defaultValue?.params.phone || "",
-    clientemail: defaultValue?.params.email || "",
-    comments: defaultValue?.params.comments || "",
+    clientname: defaultValue? defaultValue.clientname : "",
+    clientphone: defaultValue? defaultValue.clientphone : "",
+    clientemail: defaultValue? defaultValue.clientemail : "",
+    comments: defaultValue? defaultValue.comments : "",
   };
   const [input, setInputHandler] = useState(initialInputState);
 

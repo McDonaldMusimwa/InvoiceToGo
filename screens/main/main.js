@@ -20,29 +20,31 @@ function Main({ navigation }) {
 
   useEffect(() => {
     async function getInvoices() {
-      console.log("trying to fetch")
+      try {
         const invoices = await fetchInvoices();
-        console.log(invoices)
-        invoicesCtx.setInvoices(invoices);
-    
+        invoicesCtx.setInvoices(invoices); // Store as array
+        setFilteredInvoices(invoices);    // Initialize filteredInvoices
+      } catch (error) {
+        console.error("Error fetching invoices: ", error);
+      }
     }
-    
     getInvoices();
-  }, []); 
+  }, []);
+  
 
 
 
   const navigateHandlers = {
     navigateToUnpaid: () => {
       const invoices = invoicesCtx.invoices.filter(
-        (invoice) => invoice.status === "unpaid"
+        (invoice) => invoice.invoicestatus === "unpaid"
       );
       setScreen("unpaid");
       setFilteredInvoices(invoices);
     },
     navigateToPaid: () => {
       const invoices = invoicesCtx.invoices.filter(
-        (invoice) => invoice.status === "paid"
+        (invoice) => invoice.invoicestatus === "paid"
       );
       setScreen("paid");
       setFilteredInvoices(invoices);
@@ -52,27 +54,28 @@ function Main({ navigation }) {
       setFilteredInvoices(invoicesCtx.invoices);
     },
   };
+  
 
   const renderItem = ({ item }) => {
-    const initialValue = 0;
-    const subTotal = item.elements.reduce(
-      (total, inv) => total + inv.units * inv.unitcost,
-      initialValue
-    );
-
+    const subTotal = item.invoiceelements.reduce((total, inv) => {
+      return total + Number(inv.units) * Number(inv.costperitem);
+    }, 0);
+  
     const onPressNavigate = () => {
-      navigation.navigate("ManageInvoice", { invoiceid: item.id });
+      navigation.navigate("Invoicetemplate", { invoiceid: item.id });
     };
+  
     return (
       <Invoice
         invoicenumber={item.invoicenumber}
-        subTotal={subTotal}
-        status={item.status}
+        subTotal={subTotal.toFixed(2)}
+        status={item.invoicestatus}
         customer={item.clientname}
         onPressAction={onPressNavigate}
       />
     );
   };
+  
 
   return (
     <View style={styles.invoicesContainer}>
@@ -136,7 +139,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: "absolute",
     bottom: 10,
-    left: width / 3,
+   width:'%100',
     zIndex: 100,
     alignItems: "center",
     padding: 10, // Adjust padding as needed

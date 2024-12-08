@@ -56,7 +56,9 @@ function inputHandler(key,value){
       address1:company.address1,
       address2:company.address2
   }
-    navigation.navigate("AllSet");
+
+  console.log(companyData)
+    //navigation.navigate("AllSet");
   }
   return (
     <View style={styles.screenContainer}>

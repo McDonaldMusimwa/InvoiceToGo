@@ -14,6 +14,7 @@ import InvoicesContectProvider from "./store/invoices-context";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import ManageClient from "./screens/clients/ManageClient";
 import ModifyInvoice from "./screens/invoice/modify/ModifyInvoice";
+import Invoicetemplate from "./components/invoice/Ui/Invoicetemplate";
 //import InvoiceForm from './components/invoice/InvoiceForm'
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -24,6 +25,16 @@ export default function App() {
       <InvoicesContectProvider>
         <NavigationContainer>
           <Stack.Navigator>
+            <Stack.Screen
+              name="Previous"
+              component={BottomNavigatorTab}
+              options={{
+                headerShown: false,
+                headerLeft: () => {
+                  <FontAwesome5 name="search" size={24} color="black" />;
+                },
+              }} // Hide the default header for Bottom Tabs
+            />
             {/*  
             <Stack.Screen
               name="Onboard"
@@ -39,13 +50,13 @@ export default function App() {
                 headerShown: false,
               }}
             />
-
+*/}
             <Stack.Screen
               name="CreateCompany"
               component={CreateCompany}
               options={{ headerShown: false }}
             />
-*/}
+
             <Stack.Screen
               name="AllSet"
               component={AllSet}
@@ -70,18 +81,16 @@ export default function App() {
                 title: "",
               }}
             />
-            <Stack.Screen
-              name="Previous"
-              component={BottomNavigatorTab}
-              options={{
-                headerShown: false,
-                headerLeft: () => {
-                  <FontAwesome5 name="search" size={24} color="black" />;
-                },
-              }} // Hide the default header for Bottom Tabs
-            />
+
             <Stack.Screen name="ManageInvoice" component={AddInvoice} />
             <Stack.Screen name="ModifyInvoice" component={ModifyInvoice} />
+            <Stack.Screen
+              name="Invoicetemplate"
+              component={Invoicetemplate}
+              options={{
+                title: "Invoice",
+              }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </InvoicesContectProvider>

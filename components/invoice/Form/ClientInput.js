@@ -4,7 +4,7 @@ import colors from "../../../const/Colors";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-function ClientInput({ inputHandler }) {
+function ClientInput({ inputHandler,defaultValue }) {
   const [client, setClient] = useState("");
   const navigation = useNavigation();
   useEffect(() => {
@@ -23,7 +23,7 @@ function ClientInput({ inputHandler }) {
         style={styles.clientInputPressable}
       >
         <Text style={styles.clientnameText}>
-          For : {client}
+          For : {defaultValue? defaultValue : client}
           {"                                     "}
         </Text>
         <AntDesign name="right" size={20} color="black" />

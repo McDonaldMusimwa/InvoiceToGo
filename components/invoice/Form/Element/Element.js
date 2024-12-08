@@ -1,11 +1,14 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import colors from "../../../../const/Colors";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
-function Element({ units, item, costperitem }) {
+function Element({ units, item, costperitem ,deleteElement,id,modifyElement,openModalEdit}) {
   return (
-    <View>
+    <Pressable onPress={()=>openModalEdit(true)}>
       <View style={styles.elementContainer}>
         <Text style={styles.item}>{item}</Text>
+      
         <View style={styles.figures}>
           <Text style={styles.faintText}>
             {units} x $ {costperitem}
@@ -13,9 +16,14 @@ function Element({ units, item, costperitem }) {
 
           <Text>$ {+units * +costperitem}</Text>
         </View>
+        <View>
+        <Pressable onPress={()=>deleteElement(id)}>
+        <FontAwesome name="trash-o" size={24} color="black" />
+        </Pressable>
+        </View>
       </View>
       <View style={styles.line}></View>
-    </View>
+    </Pressable>
   );
 }
 

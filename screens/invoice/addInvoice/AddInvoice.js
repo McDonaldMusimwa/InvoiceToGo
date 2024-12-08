@@ -3,21 +3,23 @@ import { useContext, useState } from "react";
 import colors from "../../../const/Colors";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
-import InvoiceForm from '../../../components/invoice/Form/InvoiceForm'
+import InvoiceForm from "../../../components/invoice/Form/InvoiceForm";
 import { InvoicesContext } from "../../../store/invoices-context";
+
 import { useRoute } from "@react-navigation/native";
 import { storeInvoice } from "../../../util/https";
-function AddInvoice({navigation}) {
+function AddInvoice({ navigation }) {
+  const invoiceCtx = useContext(InvoicesContext);
 
- const onSubmit=(formData)=>{
-  console("form sending invoice" + formData)
-  storeInvoice(formData)
-
- }
+  const onConfirm = async (formData) => {
+    const id = await storeInvoice(formData);
+    invoiceCtx.addInvoice({ ...formData, id: id });
+    navigation.goBack()
+  };
 
   return (
     <View style={styles.addInvoiceContainer}>
-      <InvoiceForm isEditing={false} onSubmitInvoice={onSubmit}/>
+      <InvoiceForm isEditing={false} onSubmitInvoice={onConfirm} />
     </View>
   );
 }

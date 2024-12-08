@@ -29,7 +29,7 @@ function InvoiceElements(props) {
     }));
   }
 
-  function submitElement() {
+  function createElement() {
     const updatedElements = [...elements, element];
     setElements(updatedElements);
     setElement({ item: "", units: "", costperitem: "" }); // Reset form
@@ -41,22 +41,42 @@ function InvoiceElements(props) {
     return total + element.units * element.costperitem;
   }
 
-  const total = elements.reduce(calculateElementTotal, 0);
+  const elementsToCalculate = props.defaultElements? props.defaultElements : elements
+  const total = elementsToCalculate.reduce(calculateElementTotal, 0);
+
+  function deleteElement(id) {
+    const updatedElements = elements.filter((element) => element.id !== id);
+    setElements(updatedElements);
+    props.extractElements(updatedElements); // Sync with parent
+  }
+  function editElement(id, updatedData) {
+    const updatedElements = elements.map((element) =>
+      element.id === id ? { ...element, ...updatedData } : element
+    );
+    setElements(updatedElements);
+    props.extractElements(updatedElements); // Sync with parent
+  }
 
   return (
     <View style={styles.inputBackground}>
       {/* Display Added Elements */}
       <FlatList
-        data={elements}
-        keyExtractor={(item) => item}
+        data={props.defaultElements? props.defaultElements : elements}
+        nestedScrollEnabled={true}
+        keyExtractor={(item, index) => item.id || index.toString()} // Fallback to index if no id
         renderItem={({ item }) => (
           <Element
+            id={item.id}
+            openModalEdit={setModalState}
+            deleteElement={deleteElement}
             units={item.units}
             costperitem={item.costperitem}
             item={item.item}
+
           />
         )}
       />
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -70,7 +90,8 @@ function InvoiceElements(props) {
               placeholder="Item"
               value={element.item}
               onChangeText={(text) => {
-                addInvoiceElement("id", text);
+                const id = new Date() + Math.floor(Math.random() * 100);
+                addInvoiceElement("id", id);
                 addInvoiceElement("item", text);
               }}
             />
@@ -88,13 +109,21 @@ function InvoiceElements(props) {
               value={element.costperitem}
               onChangeText={(text) => addInvoiceElement("costperitem", text)}
             />
+            <View style={styles.ModalButtonContainer}>
+              <Pressable
+                style={[styles.button, styles.buttonAdd]}
+                onPress={createElement}
+              >
+                <Text style={styles.textStyle}>Add</Text>
+              </Pressable>
 
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={submitElement}
-            >
-              <Text style={styles.textStyle}>Add Item</Text>
-            </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalState(false)}
+              >
+                <Text style={styles.textStyle}>close</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -113,6 +142,13 @@ function InvoiceElements(props) {
 }
 
 const styles = StyleSheet.create({
+  ModalButtonContainer: {
+    gap:50,
+    flexDirection: "row",
+    justifyContent: "space-between", // Adjust spacing between buttons
+    alignItems: "center", // Align buttons vertically in the container
+  },
+
   addElementContainer: {
     justifyContent: "left",
     alignItems: "left",
@@ -162,8 +198,11 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
   },
-  buttonClose: {
+  buttonAdd: {
     backgroundColor: colors.bluelight1,
+  },
+  buttonClose: {
+    backgroundColor: colors.red,
   },
   textStyle: {
     color: "white",

@@ -10,19 +10,24 @@ const backendurl = " https://invoicetogo-54bf5-default-rtdb.firebaseio.com";
 /* invoices http function */
 export async function storeInvoice(invoiceData) {
   try {
-    await axios.post(`${backendurl}/invoices.json`, invoiceData);
+    const response = await axios.post(
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices.json",
+      invoiceData
+    );
+    const id = response.data.name;
+    console.log(response.data.name);
+    return id;
   } catch (error) {
     console.error("Error storing invoice:", error);
   }
 }
 
 export async function fetchInvoices() {
-
   try {
-    console.log("starting")
-    const response = await axios.get(backendurl + "/invoices.json");
-    console.log("response =>", response);
-    
+    const response = await axios.get(
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices.json"
+    );
+
     const invoices = [];
     // Loop over each invoice in the response data
     for (const key in response.data) {
@@ -42,7 +47,10 @@ export async function fetchInvoices() {
       };
 
       // Loop over the elements within each invoice if there are any
-      if (invoiceData.invoiceelements && Array.isArray(invoiceData.invoiceelements)) {
+      if (
+        invoiceData.invoiceelements &&
+        Array.isArray(invoiceData.invoiceelements)
+      ) {
         for (const elementKey in invoiceData.invoiceelements) {
           const element = invoiceData.invoiceelements[elementKey];
 
@@ -64,7 +72,7 @@ export async function fetchInvoices() {
     }
 
     // Return the array of invoices with their elements
-    console.log(invoices);
+
     return invoices;
   } catch (error) {
     console.error("Error fetching invoices:", error);
@@ -72,20 +80,43 @@ export async function fetchInvoices() {
   }
 }
 
+export function updateInvoice(invoiceid, invoiceData) {
+  try{
+    return axios.put(`https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices/${invoiceid}.json`,invoiceData)
+
+  }catch(error){
+    console.error("error modifying", error)
+  }
+}
+
+export async function deleteExpense(invoiceid) {
+  try{
+   return axios.delete(`https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices/${invoiceid}.json`)
+
+  }catch(error){
+    console.error("error deleting" , error)
+  }
+}
 
 /* clients http function */
 export async function storeClient(clientData) {
   try {
-    await axios.post(`${backendurl}/clients.json`, clientData);
+    await axios.post(
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/clients.json",
+      clientData
+    );
   } catch (error) {
     console.error("Error storing client:", error);
   }
 }
-
+export async function updateClient(clientid, clientData) {}
+export async function deleteClient(clientid) {}
 export async function fetchClients() {
   try {
-    const response = await axios.get(`${backendurl}/clients.json`);
-    console.log(response.data);
+    const response = await axios.get(
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/clients.json"
+    );
+
     return mapFirebaseResponse(response.data, (key, clientData) => ({
       id: key,
       clientname: clientData.clientname,
@@ -98,10 +129,16 @@ export async function fetchClients() {
     return [];
   }
 }
+/* Company Logic */
 
+export async function updateCompany(companyId, companyData) {}
+export async function deleteCompany(companyid) {}
 export async function storeCompany(companyData) {
   try {
-    await axios.post(`${backendurl}/company.json`, companyData);
+    await axios.post(
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/companies.json",
+      companyData
+    );
   } catch (error) {
     console.error("Error storing company:", error);
   }
@@ -109,7 +146,10 @@ export async function storeCompany(companyData) {
 
 export async function fetchCompany() {
   try {
-    const response = await axios.get(`${backendurl}/company.json`);
+    const response = await axios.get(
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/companies.json"
+    );
+
     return mapFirebaseResponse(response.data, (key, companyData) => ({
       id: key,
       ...companyData,

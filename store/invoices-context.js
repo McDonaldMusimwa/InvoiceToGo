@@ -43,8 +43,8 @@ export const InvoicesContext = createContext({
 function invoicesReducer(state, action) {
   switch (action.type) {
     case "ADD":
-      const id = new Date().toString() + Math.random().toString();
-      return [{ ...action.payload, id: id }, ...state];
+      
+      return [...action.payload, ...state];
     case "DELETE":
       return state.filter((invoice) => invoice.id !== action.payload);
 
@@ -83,7 +83,8 @@ function clientsReducer(state, action) {
       return updatedClients;
 
     case "SET":
-      return action.payload;
+      const reversedInvoices = action.payload.reverse()
+      return reversedInvoices;
 
     default:
       return state;

@@ -16,15 +16,11 @@ import { useState, useEffect, useMemo } from "react";
 import colors from "../../../const/Colors";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
-import { useNavigation } from "@react-navigation/native";
 import ClientInput from "./ClientInput";
 import InvoiceElements from "./InvoiceElements";
-import DiscountTotal from "./DiscountTotal";
 import Button from "../../UI/Button";
-import { storeInvoice } from "../../../util/https";
 
 function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
-
   const initialState = {
     clientname: defaultInvoice ? defaultInvoice.clientname : "",
     invoicenumber: defaultInvoice ? defaultInvoice.invoicenumber : "",
@@ -37,9 +33,9 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
 
   const [modalVisible, setModalVisible] = useState(false);
   //const [clientModal, setClientModal] = useState(false);
-  const [elements, setinvoiceElements] = useState([]);
+  const [elements, setinvoiceElements] = useState(defaultInvoice? defaultInvoice.invoiceelements :[]);
   const [invoiceInput, setInvoiceInput] = useState(initialState);
-  console.log("form state" + invoiceInput);
+  console.log("default data" + JSON.stringify(invoiceInput));
 
   function inputHandler(key, input) {
     setInvoiceInput((prevState) => ({
@@ -87,7 +83,7 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
   function submitForm() {
     if (!validateInputs(invoiceInput)) return;
 
-    console.log('starting')
+    console.log("starting");
     const formData = {
       ...invoiceInput,
       invoiceelements: elements,
@@ -95,17 +91,16 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
       balancedue: total.toFixed(2),
     };
 
-    console.log("rejected")
-    formData;
-    console.log("Submitting invoice:", formData);
-    storeInvoice(formData);
+    console.log("rejected");
+    //console.log("Submitting invoice:", formData);
+    onSubmitInvoice(formData);
     setInvoiceInput(initialState);
     setinvoiceElements([]);
   }
   //console.log("Current invoicedate:", invoiceInput.invoicedate);
 
   return (
-    <ScrollView
+    <View
       contentContainerStyle={styles.scrollViewContainer}
       keyboardShouldPersistTaps="handled"
     >
@@ -116,6 +111,7 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
           <TextInput
             style={styles.invoicenumber}
             placeholder="inv45"
+            value={invoiceInput.invoicenumber}
             onChangeText={(invoicenumber) =>
               inputHandler("invoicenumber", invoicenumber)
             }
@@ -125,11 +121,15 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
             style={styles.datePressable}
           >
             <Text>Invoice Due</Text>
+
+            {/*  
             <Text style={styles.dateLabel}>
               {invoiceInput.invoicedate
                 ? invoiceInput.invoicedate.format("YYYY-MM-DD")
                 : "No date set"}
             </Text>
+            
+*/}
           </Pressable>
 
           {/* Modal for Date Picker */}
@@ -141,18 +141,19 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
           >
             <View style={styles.centeredView}>
               <View style={styles.dateContainer}>
-               <DateTimePicker
-                    mode="single"
+                <DateTimePicker
+                  mode="single"
+                  /*
                     date={
                       invoiceInput.invoicedate
                         ? invoiceInput.invoicedate.toDate()
                         : dayjs().toDate()
-                    }
-                    onChange={(params) => {
-                      const selectedDate = params.date || dayjs();
-                      inputHandler("invoicedate", selectedDate);
-                    }}
-                  />
+                    } */
+                  onChange={(params) => {
+                    const selectedDate = params.date || dayjs();
+                    inputHandler("invoicedate", selectedDate);
+                  }}
+                />
 
                 <Pressable onPress={() => setModalVisible(false)}>
                   <Text style={styles.closeModalText}>Close</Text>
@@ -178,11 +179,11 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
             <Text>Discount</Text>
 
             <TextInput
+              value={invoiceInput.discount}
               style={styles.input}
               onChangeText={(disc) => inputHandler("discount", disc)}
               keyboardType="numeric"
               returnKeyType={"next"}
-              value={defaultInvoice ? defaultInvoice.discount : ""}
             />
           </View>
           <View style={styles.line}></View>
@@ -222,7 +223,7 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
           </Button>
         </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 

@@ -4,6 +4,7 @@ import Clients from "../../screens/clients/Clients";
 import Settings from "../../screens/settings/Settings";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Elements from "../../screens/elements/Elements";
 const BottomTab = createBottomTabNavigator();
 
 function BottomNavigatorTab() {
@@ -39,9 +40,9 @@ function BottomNavigatorTab() {
       />
       <BottomTab.Screen
         name="Elements"
-        component={Settings}
+        component={Elements}
         options={{
-          title: "Settings",
+          title: "Elements",
           tabBarLabel: "Elements",
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="cube-outline" size={size} color={color} />
