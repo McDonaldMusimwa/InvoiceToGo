@@ -4,123 +4,150 @@ import {
   StyleSheet,
   Pressable,
   Dimensions,
+  Image,
+  ActivityIndicator
 } from "react-native";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { InvoicesContext } from "../../../store/invoices-context";
-import RNHTMLtoPDF from "react-native-html-to-pdf";
-import * as Sharing from "expo-sharing";
+//import RNHTMLtoPDF from "react-native-html-to-pdf";
+import { shareAsync } from "expo-sharing";
+import { printToFileAsync } from "expo-print";
 import colors from "../../../const/Colors";
 import Feather from "@expo/vector-icons/Feather";
+import loading from "../../../assets/loading.webm";
+import generateInvoiceItems from "../../../util/generateInvoicehtml";
 const width = Dimensions.get("window").width;
+
 //import { useRoute } from '@react-navigation/native';
 function Invoicetemplate({ route, navigation }) {
+  const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(1);
   const invoiceCtx = useContext(InvoicesContext);
   const invId = route.params;
   const invoiceData = invoiceCtx.invoices.find(
     (invoice) => (invoice.id = invId)
   );
 
-  const generatePDF = async () => {
-    const htmlContent = `
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              margin: 20px;
-              padding: 0;
-              background-color: #f9f9f9;
-            }
-            .header {
-              text-align: center;
-              background-color: #4A90E2;
-              color: white;
-              padding: 15px 0;
-              font-size: 20px;
-              font-weight: bold;
-            }
-            .section {
-              background-color: white;
-              margin: 15px 0;
-              padding: 15px;
-              border-radius: 8px;
-              box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-            }
-            .section-title {
-              font-size: 18px;
-              font-weight: bold;
-              margin-bottom: 10px;
-            }
-            .item-row {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 5px;
-            }
-            .summary {
-              text-align: right;
-              font-weight: bold;
-              margin-top: 10px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">Invoice #${invoiceData.invoicenumber}</div>
-          <div class="section">
-            <h2 class="section-title">Client Information</h2>
-            <p>Name: ${invoiceData.clientname}</p>
-            <p>Date: ${new Date(invoiceData.invoicedate).toLocaleDateString()}</p>
-            <p>Status: ${invoiceData.invoicestatus}</p>
-          </div>
-          <div class="section">
-            <h2 class="section-title">Items</h2>
-            ${invoiceData.invoiceelements
-              .map(
-                (item) => `
-                <div class="item-row">
-                  <span>${item.item}</span>
-                  <span>Cost/Unit: $${item.costperitem}</span>
-                  <span>Units: ${item.units}</span>
-                  <span>Total: $${item.costperitem * item.units}</span>
-                </div>
-              `
-              )
-              .join("")}
-          </div>
-          <div class="section">
-            <h2 class="section-title">Summary</h2>
-            <p>Discount: ${invoiceData.discount}%</p>
-            <p>Tax: $${invoiceData.tax}</p>
-            <p class="summary">Total Due: $${invoiceData.balancedue}</p>
-          </div>
-        </body>
-      </html>
+  const htmlContent = `
+     <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; margin: 20px; color: #000;">
+    <!-- Container -->
+    <div style="padding: 20px; margin-top: 80px; background-color: #fff;">
+      <!-- Header -->
+      <div
+        style="text-align: center; background-color:"#000000"; padding: 10px; color: white; border-radius: 8px;"
+      >
+        <h1 style="font-size: 24px; font-weight: bold; margin: 0;">Invoice</h1>
+      </div>
+
+      <!-- Invoice Info -->
+      <div
+        style="display: flex; justify-content: space-between; margin-top: 20px;"
+      >
+        <div style="display: flex;">
+          <p style="font-weight: bold; margin: 0;">Invoice Number:</p>
+          <p style="margin-left: 5px; margin: 0;">${
+            invoiceData.invoicenumber
+          }</p>
+        </div>
+        <div style="display: flex;">
+          <p style="font-weight: bold; margin: 0;">Invoice Date:</p>
+          <p style="margin-left: 5px; margin: 0;">
+            ${new Date(invoiceData.invoicedate).toDateString()}
+          </p>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div
+        style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
+      ></div>
+
+      <!-- Customer Info -->
+      <div style="margin-top: 20px;">
+        <h2
+          style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"
+        >
+          Customer Information
+        </h2>
+        <div style="display: flex; margin-bottom: 5px;">
+          <p style="font-weight: bold; margin: 0;">Name:</p>
+          <p style="margin-left: 5px; margin: 0;">${invoiceData.clientname}</p>
+        </div>
+        <div style="display: flex; margin-bottom: 5px;">
+          <p style="font-weight: bold; margin: 0;">Email:</p>
+          <p style="margin-left: 5px; margin: 0;">${invoiceData.clientemail}</p>
+        </div>
+        <div style="display: flex; margin-bottom: 5px;">
+          <p style="font-weight: bold; margin: 0;">Address:</p>
+          <p style="margin-left: 5px; margin: 0;">
+            ${invoiceData.customerAddress}
+          </p>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div
+        style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
+      ></div>
+
+      <!-- Invoice Items -->
+      <div style="margin-top: 20px;">
+        <h2
+          style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"
+        >
+          Summary
+        </h2>
+         ${generateInvoiceItems(invoiceData.invoiceelements)}
+      </div>
+
+      <!-- Divider -->
+      <div
+        style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
+      ></div>
+
+      <!-- Total -->
+      <div
+        style="display: flex; justify-content: flex-end; margin-top: 20px;"
+      >
+        <p style="font-weight: bold; margin: 0;">Total:</p>
+        <p style="font-size: 18px; font-weight: bold; margin-left: 10px; margin: 0;">
+          ${invoiceData.balancedue}
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>
     `;
 
+  const generatePDF = async () => {
+    setLoading(true);
     try {
-      const file = await RNHTMLtoPDF.convert({
-        html: htmlContent,
-        fileName: `Invoice_${invoiceData.invoicenumber}`,
-        base64: false,
-      });
-
-      if (file.filePath) {
-        Alert.alert("PDF Generated", "Your invoice is ready to share.", [
-          {
-            text: "Share",
-            onPress: async () => {
-              if (await Sharing.isAvailableAsync()) {
-                await Sharing.shareAsync(file.filePath);
-              }
-            },
-          },
-          { text: "OK", style: "cancel" },
-        ]);
-      }
+      const file = await printToFileAsync({ html: htmlContent, base64: false });
+      console.log("PDF URI: ", file);
+      await shareAsync(file.uri);
+      setCount(count + 1);
+      setLoading(false);
     } catch (error) {
       Alert.alert("Error", "An error occurred while generating the PDF.");
       console.error("PDF Generation Error:", error);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="black" />
+
+      </View>
+    );
+  }
 
   //console.log(invoice)
   return (
@@ -179,7 +206,7 @@ function Invoicetemplate({ route, navigation }) {
         </View>
       </View>
       <View style={styles.sendButton}>
-        <Pressable onPress={generatePDF}>
+        <Pressable onPress={() => generatePDF()}>
           <Feather name="send" size={36} color="black" />
         </Pressable>
       </View>
@@ -195,10 +222,10 @@ const styles = StyleSheet.create({
     padding: 5,
     marginTop: 20,
     position: "absolute",
-    bottom:-120,
+    bottom: -120,
     left: width / 1.5,
     zIndex: 100,
-    alignContent:"right",
+    alignContent: "right",
     // Shadow for iOS
     shadowColor: colors.black,
     shadowOffset: { width: 2, height: 2 },
@@ -276,6 +303,13 @@ const styles = StyleSheet.create({
   total: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  loadingImage: {
+    width: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    margin: 5,
   },
 });
 

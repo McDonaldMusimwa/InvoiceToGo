@@ -39,7 +39,7 @@ function ClientInput({ navigation }) {
     }
   }
 
-  console.log(clientCtx.clients)
+  //console.log(clientCtx.clients)
 
   return (
     <View style={styles.inputBackground}>
