@@ -1,6 +1,7 @@
 import { createContext, useReducer } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 export const InvoicesContext = createContext({
+  /* Invoice */
   invoices: [],
   addInvoice: ({
     clientname,
@@ -33,18 +34,35 @@ export const InvoicesContext = createContext({
       signature,
     }
   ) => {},
+  /* Client */
   clients: [],
   addClient: ({ clientname, clientphone, clientemail, comments }) => {},
   updateClient: (id, { clientname, clientphone, clientemail, comments }) => {},
-  deleteCleint: ({ id }) => {},
+  deleteClient: ({ id }) => {},
   setClients: (clients) => {},
+  /* Company */
+  company: {},
+  addCompany: ({
+    companylogo,
+    companyname,
+    email,
+    phone,
+    address1,
+    address2,
+    taxRate,
+  }) => {},
+  updateCompany: (
+    id,
+    { companylogo, companyname, email, phone, address1, address2, taxRate }
+  ) => {},
+  deleteCompany: ({ id }) => {},
+  setCompany: (company) => {},
 });
 
 function invoicesReducer(state, action) {
   switch (action.type) {
     case "ADD":
-      
-      return [...action.payload, ...state];
+      return [action.payload, ...state];
     case "DELETE":
       return state.filter((invoice) => invoice.id !== action.payload);
 
@@ -68,7 +86,7 @@ function invoicesReducer(state, action) {
 function clientsReducer(state, action) {
   switch (action.type) {
     case "ADD":
-      const id = new Date().toString() + Math.random().toString();
+      const id = uuidv4();
       return [{ ...action.payload, id: id }, ...state];
     case "DELETE":
       return state.filter((client) => client.id !== action.payload);
@@ -83,16 +101,46 @@ function clientsReducer(state, action) {
       return updatedClients;
 
     case "SET":
-      const reversedInvoices = action.payload.reverse()
+      const reversedInvoices = action.payload.reverse();
       return reversedInvoices;
 
     default:
       return state;
   }
 }
-function InvoicesContectProvider({ children }) {
+
+/* Company reducer */
+
+function companyReducer(state, action) {
+  switch (action.type) {
+    case "ADD":
+      const id = uuidv4();
+      return [{ ...action.payload, id: id }, ...state];
+    case "DELETE":
+      return state.filter((client) => client.id !== action.payload);
+    case "UPDATE":
+      const updateDatableClientIndex = state.findIndex(
+        (client) => client.id === action.payload.id
+      );
+      const updatableClient = state[updateDatableClientIndex];
+      const updatedClient = { ...updatableClient, ...action.payload.data };
+      const updatedClients = [...state];
+      updatedClients[updateDatableClientIndex] = updatedClient;
+      return updatedClients;
+
+    case "SET":
+ 
+      return action.payload
+
+    default:
+      return state;
+  }
+}
+
+function InvoicesContextProvider({ children }) {
   const [invoicesState, dispatch] = useReducer(invoicesReducer, []);
   const [clientsState, release] = useReducer(clientsReducer, []);
+  const [companyState, dismis] = useReducer(companyReducer, {});
   function addInvoice(invoiceData) {
     dispatch({ type: "ADD", payload: invoiceData });
   }
@@ -127,6 +175,25 @@ function InvoicesContectProvider({ children }) {
   function updateClient(id, clientData) {
     release({ type: "UPDATE", payload: { id: id, data: clientData } });
   }
+  /* company */
+  function addCompany(companyData) {
+    dismis({ type: "ADD", payload: companyData });
+  }
+
+  function setCompany(company) {
+    dismis({
+      type: "SET",
+      payload: company,
+    });
+  }
+
+  function deleteCompany(id) {
+    dismis({ type: "DELETE", payload: id });
+  }
+
+  function updateCompany(id, companyData) {
+    dismis({ type: "UPDATE", payload: { id: id, data: companyData } });
+  }
 
   const value = {
     invoices: invoicesState,
@@ -139,6 +206,11 @@ function InvoicesContectProvider({ children }) {
     deleteClient: deleteClient,
     updateClient: updateClient,
     setClients: setClients,
+    company: companyState,
+    addCompany: addCompany,
+    deleteCompany: deleteCompany,
+    updateCompany: updateCompany,
+    setCompany: setCompany,
   };
 
   return (
@@ -148,4 +220,4 @@ function InvoicesContectProvider({ children }) {
   );
 }
 
-export default InvoicesContectProvider;
+export default InvoicesContextProvider;

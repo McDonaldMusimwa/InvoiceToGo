@@ -1,32 +1,43 @@
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ClientForInvoice from "../../components/client/clientForInvoice";
-import { clients } from "../../const/Data";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useContext } from "react";
+import { InvoicesContext } from "../../store/invoices-context";
+import { fetchClients } from "../../util/https";
 function SelectClient() {
+  const clientCtx = useContext(InvoicesContext);
 
-  const route = useRoute()
+  const route = useRoute();
   const navigation = useNavigation();
 
   function selectHandler(id) {
     const selectedClient = clients.find((client) => client.id === id);
-    route.params.onGoBack(selectedClient.name)
+    route.params.onGoBack(selectedClient);
     navigation.goBack();
-
   }
+  useEffect(() => {
+    async function getClients() {
+      try {
+        const clients = await fetchClients(); // Fetch clients from backend
+        clientCtx.setClients(clients); // Update context with fetched clients
+      } catch (error) {
+        console.error("Error fetching clients: ", error);
+      }
+    }
+    getClients();
+  }, []);
 
   return (
     <View style={styles.clientContainer}>
-
-
       <FlatList
-        data={clients}
-        keyExtractor={(item) => item.id.toString()}
+        data={clientCtx.clients}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ClientForInvoice
-            name={item.name}
-            phone={item.phone}
-            email={item.email}
+            name={item.clientname}
+            phone={item.clientphone}
+            email={item.clientemail}
             onPress={() => selectHandler(item.id)}
             id={item.id}
           />

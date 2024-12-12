@@ -5,132 +5,196 @@ import {
   Pressable,
   Dimensions,
   Image,
-  ActivityIndicator
 } from "react-native";
-import { useContext, useState } from "react";
+import { useContext, useState,useEffect } from "react";
 import { InvoicesContext } from "../../../store/invoices-context";
 //import RNHTMLtoPDF from "react-native-html-to-pdf";
 import { shareAsync } from "expo-sharing";
 import { printToFileAsync } from "expo-print";
 import colors from "../../../const/Colors";
 import Feather from "@expo/vector-icons/Feather";
-import loading from "../../../assets/loading.webm";
 import generateInvoiceItems from "../../../util/generateInvoicehtml";
+import { taxRate } from "../../../const/Data";
+import LoadingOverLay from "../../UI/LoadingOverLay";
+import { fetchCompany } from "../../../util/https";
+import { getBase64Image } from "../../../util/generateInvoicehtml";
 const width = Dimensions.get("window").width;
 
 //import { useRoute } from '@react-navigation/native';
 function Invoicetemplate({ route, navigation }) {
+const [logoBase64,setBase64Logo] = useState()
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(1);
   const invoiceCtx = useContext(InvoicesContext);
-  const invId = route.params;
+  const fetchedCompany = invoiceCtx.company
+    ? invoiceCtx.company
+    : async () => await fetchCompany();
+  const company = fetchedCompany[0];
+  console.log("company data" + JSON.stringify(company));
+  const invId = route.params.invoiceid;
+
   const invoiceData = invoiceCtx.invoices.find(
     (invoice) => (invoice.id = invId)
   );
 
+
+  // UseEffect hook to fetch base64 image when company data is available
+  useEffect(() => {
+    const fetchLogo = async () => {
+      if (invoiceCtx.company && invoiceCtx.company.companylogo) {
+        const logoBase64 = await getBase64Image(invoiceCtx.company.companylogo);
+        setBase64Logo(logoBase64);
+      }
+    };
+    
+    fetchLogo();
+  }, [invoiceCtx.company]);
   const htmlContent = `
-     <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Invoice</title>
-  </head>
-  <body style="font-family: Arial, sans-serif; margin: 20px; color: #000;">
-    <!-- Container -->
-    <div style="padding: 20px; margin-top: 80px; background-color: #fff;">
-      <!-- Header -->
-      <div
-        style="text-align: center; background-color:"#000000"; padding: 10px; color: white; border-radius: 8px;"
-      >
-        <h1 style="font-size: 24px; font-weight: bold; margin: 0;">Invoice</h1>
-      </div>
+  <html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Invoice</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 20px; color: #000;">
+ <!-- Container -->
+ <div style="padding: 20px; margin-top: 80px; background-color: #fff;">
+   <!-- Header -->
+   <div
+     style="text-align: center; background-color:"#000000"; padding: 10px; color: white; border-radius: 8px;"
+   >
+     
+     <img src=${logoBase64} alt=${
+    invoiceCtx.company.companyname
+  } 
+    style="height: 60px; width: auto; object-fit: cover; border-radius: 4px;"
+    />
+   </div>
 
-      <!-- Invoice Info -->
-      <div
-        style="display: flex; justify-content: space-between; margin-top: 20px;"
-      >
-        <div style="display: flex;">
-          <p style="font-weight: bold; margin: 0;">Invoice Number:</p>
-          <p style="margin-left: 5px; margin: 0;">${
-            invoiceData.invoicenumber
-          }</p>
-        </div>
-        <div style="display: flex;">
-          <p style="font-weight: bold; margin: 0;">Invoice Date:</p>
-          <p style="margin-left: 5px; margin: 0;">
-            ${new Date(invoiceData.invoicedate).toDateString()}
-          </p>
-        </div>
-      </div>
+   <!-- Invoice Info -->
+   <div
+     style="display: flex; justify-content: space-between; margin-top: 20px;"
+   >
+     <div style="display: flex;">
+       <p style="font-weight: bold; margin: 0;">Tax Invoice Number:</p>
+       <p style="margin-left: 5px; margin: 0;">${invoiceData.invoicenumber}</p>
+     </div>
+     <div style="display: flex;">
+       <p style="font-weight: bold; margin: 0;">Invoice Date:</p>
+       <p style="margin-left: 5px; margin: 0;">
+         ${new Date(invoiceData.invoicedate).toDateString()}
+       </p>
+     </div>
+   </div>
 
-      <!-- Divider -->
-      <div
-        style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
-      ></div>
+   <!-- Divider -->
+   <div
+     style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
+   ></div>
 
-      <!-- Customer Info -->
-      <div style="margin-top: 20px;">
-        <h2
-          style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"
-        >
-          Customer Information
-        </h2>
-        <div style="display: flex; margin-bottom: 5px;">
-          <p style="font-weight: bold; margin: 0;">Name:</p>
-          <p style="margin-left: 5px; margin: 0;">${invoiceData.clientname}</p>
-        </div>
-        <div style="display: flex; margin-bottom: 5px;">
-          <p style="font-weight: bold; margin: 0;">Email:</p>
-          <p style="margin-left: 5px; margin: 0;">${invoiceData.clientemail}</p>
-        </div>
-        <div style="display: flex; margin-bottom: 5px;">
-          <p style="font-weight: bold; margin: 0;">Address:</p>
-          <p style="margin-left: 5px; margin: 0;">
-            ${invoiceData.customerAddress}
-          </p>
-        </div>
-      </div>
+   <!-- Customer Info -->
+<div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 20px;">
+   <div style="margin-top: 20px;">
+     <h2
+       style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"
+     >
+       Customer Information
+     </h2>
+     <div style="display: flex; margin-bottom: 5px;">
+       <p style="font-weight: bold; margin: 0;">Name:</p>
+       <p style="margin-left: 5px; margin: 0;">${
+         invoiceData.clientname.name
+       }</p>
+     </div>
+     <div style="display: flex; margin-bottom: 5px;">
+       <p style="font-weight: bold; margin: 0;">Email:</p>
+       <p style="margin-left: 5px; margin: 0;">${
+         invoiceData.clientname.email
+       }</p>
+     </div>
+     <div style="display: flex; margin-bottom: 5px;">
+       <p style="font-weight: bold; margin: 0;">Address:</p>
+       <p style="margin-left: 5px; margin: 0;">
+         ${invoiceData.clientname.phone}
+       </p>
+     </div>
+   </div>
 
-      <!-- Divider -->
-      <div
-        style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
-      ></div>
+   <div style="margin-top: 20px;">
+     <h2
+       style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"
+     >
+       Company information
+     </h2>
+     <div style="display: flex; margin-bottom: 5px;">
+      
+       <p style="margin-left: 5px; margin: 0;">${
+         invoiceCtx.company.companyname
+       }</p>
+     </div>
+     <div style="display: flex; margin-bottom: 5px;">
+       
+       <p style="margin-left: 5px; margin: 0;">${invoiceCtx.company.phone}</p>
+     </div>
+     <div style="display: flex; margin-bottom: 5px;">
+      
+       <p style="margin-left: 5px; margin: 0;">
+         ${invoiceCtx.company.email}
+       </p>
+     </div>
+   </div>
 
-      <!-- Invoice Items -->
-      <div style="margin-top: 20px;">
-        <h2
-          style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"
-        >
-          Summary
-        </h2>
-         ${generateInvoiceItems(invoiceData.invoiceelements)}
-      </div>
 
-      <!-- Divider -->
-      <div
-        style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
-      ></div>
+   </div>
+   <!-- Divider -->
+   <div
+     style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
+   ></div>
 
-      <!-- Total -->
-      <div
-        style="display: flex; justify-content: flex-end; margin-top: 20px;"
-      >
-        <p style="font-weight: bold; margin: 0;">Total:</p>
-        <p style="font-size: 18px; font-weight: bold; margin-left: 10px; margin: 0;">
-          ${invoiceData.balancedue}
-        </p>
-      </div>
-    </div>
+   <!-- Invoice Items -->
+   <div style="margin-top: 20px;">
+     <h2
+       style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"
+     >
+       Summary
+     </h2>
+      ${generateInvoiceItems(invoiceData.invoiceelements)}
+   </div>
 
-  </body>
-</html>
-    `;
+   <!-- Divider -->
+   <div
+     style="border-bottom: 1px solid #ccc; margin: 20px 0; width: 100%;"
+   ></div>
 
+   <!-- Total -->
+   <div
+     style="display: flex; justify-content: flex-end; margin-top: 20px;"
+   >
+     <p style="font-weight: bold; margin: 0;">Tax:</p>
+     
+     <p style="font-size: 18px; font-weight: bold; margin-left: 10px; margin: 0;">
+       ${(invoiceData.balancedue * taxRate) / (taxRate + 100)}
+     </p>
+   </div>
+   <!-- Total -->
+   <div
+     style="display: flex; justify-content: flex-end; margin-top: 20px;"
+   >
+     <p style="font-weight: bold; margin: 0;">Total:</p>
+     
+     <p style="font-size: 18px; font-weight: bold; margin-left: 10px; margin: 0;">
+       ${invoiceData.balancedue}
+     </p>
+   </div>
+ </div>
+
+</body>
+</html>`;
   const generatePDF = async () => {
     setLoading(true);
     try {
       const file = await printToFileAsync({ html: htmlContent, base64: false });
-      console.log("PDF URI: ", file);
+
       await shareAsync(file.uri);
       setCount(count + 1);
       setLoading(false);
@@ -141,12 +205,7 @@ function Invoicetemplate({ route, navigation }) {
   };
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="black" />
-
-      </View>
-    );
+    <LoadingOverLay />;
   }
 
   //console.log(invoice)
@@ -173,15 +232,15 @@ function Invoicetemplate({ route, navigation }) {
           <Text style={styles.subtitle}>Customer Information</Text>
           <View style={styles.customerInfo}>
             <Text style={styles.label}>Name:</Text>
-            <Text style={styles.text}>{invoiceData.clientname}</Text>
+            <Text style={styles.text}>{invoiceData.clientname.name}</Text>
           </View>
           <View style={styles.customerInfo}>
             <Text style={styles.label}>Email:</Text>
-            <Text style={styles.text}>{invoiceData.clientemail}</Text>
+            <Text style={styles.text}>{invoiceData.clientname.email}</Text>
           </View>
           <View style={styles.customerInfo}>
-            <Text style={styles.label}>Address:</Text>
-            <Text style={styles.text}>{invoiceData.customerAddress}</Text>
+            <Text style={styles.label}>Phone:</Text>
+            <Text style={styles.text}>{invoiceData.clientname.phone}</Text>
           </View>
         </View>
         <View style={styles.divider} />
@@ -200,6 +259,12 @@ function Invoicetemplate({ route, navigation }) {
           ))}
         </View>
         <View style={styles.divider} />
+        <View style={styles.totalContainer}>
+          <Text style={styles.label}>Tax:</Text>
+          <Text style={styles.total}>
+            ${(invoiceData.balancedue * 15) / 115}
+          </Text>
+        </View>
         <View style={styles.totalContainer}>
           <Text style={styles.label}>Total:</Text>
           <Text style={styles.total}>${invoiceData.balancedue}</Text>
@@ -306,10 +371,6 @@ const styles = StyleSheet.create({
   },
   loadingImage: {
     width: 10,
-  },
-  loadingContainer: {
-    flex: 1,
-    margin: 5,
   },
 });
 

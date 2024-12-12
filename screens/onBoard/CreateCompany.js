@@ -1,96 +1,168 @@
-import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
-import { useState } from "react";
-import Button from "../../components/UI/Button";
-import colors from "../../const/Colors";
+import React, { useState, useContext, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Octicons from "@expo/vector-icons/Octicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Button from "../../components/UI/Button";
 import Input from "../../components/invoice/Form/Input";
-import { taxRate } from "../../const/Data";
-;
+import colors from "../../const/Colors";
+import { fetchCompany, storeCompany } from "../../util/https";
+import { InvoicesContext } from "../../store/invoices-context";
+
+const initialState = (defaultCompany) => ({
+  companylogo: defaultCompany?.companylogo || "",
+  phone: defaultCompany?.phone || "",
+  companyname: defaultCompany?.companyname || "",
+  email: defaultCompany?.email || "",
+  address1: defaultCompany?.address1 || "",
+  address2: defaultCompany?.address2 || "",
+  taxRate: defaultCompany?.taxRate || "",
+});
 
 function CreateCompany({ navigation }) {
-  const defaultCompany = {
-    email:"",
-    address1:"",
-    address2:"",
-    taxRate:"",
-    companyname:""
-  }
-  const initialCompanyState = {
-   
-    companyname: defaultCompany ? defaultCompany.companyname : "",
-    email: defaultCompany ? defaultCompany.email : "",
-    address1: defaultCompany ? defaultCompany.address1 : "",
-    address2: defaultCompany ? defaultCompany.address2 : "",
-    taxRate: defaultCompany ? defaultCompany.taxRate : "",
-  }
-  const [company, setCompany] = useState(initialCompanyState);
-  const [image, setImage] = useState("");
+  const companyCtx = useContext(InvoicesContext);
+  const [company, setCompany] = useState(() => initialState(null));
+  const [isLoading, setIsLoading] = useState(false);
+  const [isReady, setIsReady] = useState(false); // Track readiness to render the form
+
+  useEffect(() => {
+    async function getCompany() {
+      try {
+        const response = await fetchCompany();
+        companyCtx.setCompany(response);
+        setCompany(initialState(response[0])); // Use the first company object
+        setIsReady(true); // Mark the form as ready
+      } catch (error) {
+        console.error("Failed to fetch company:", error);
+      }
+    }
+    getCompany();
+  }, []);
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setCompany((prev) => ({ ...prev, companylogo: result.assets[0].uri }));
     }
   };
-function inputHandler(key,value){
-  setCompany((current)=>({
-    ...current,[key]:value
-  }))
-}
-  function navigateToAllScreen() {
-    const companyData ={
-      email:company.email,
-      image:image,
-      taxRate:company.taxRate,
-      address1:company.address1,
-      address2:company.address2
+
+  const inputHandler = (key, value) => {
+    setCompany((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  };
+
+  const navigateToAllScreen = async () => {
+    const companyData = {
+      email: company.email,
+      companylogo: company.companylogo,
+      taxRate: company.taxRate,
+      address1: company.address1,
+      address2: company.address2,
+      phone: company.companyphone,
+      companyname: company.companyname,
+    };
+    setIsLoading(true);
+    try {
+      await storeCompany(companyData);
+      setIsLoading(false);
+      navigation.navigate("AllSet");
+    } catch (error) {
+      console.error("Failed to save company:", error);
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading || !isReady) {
+    return <ActivityIndicator size="large" color={colors.primary} />;
   }
 
-  console.log(companyData)
-    //navigation.navigate("AllSet");
-  }
   return (
     <View style={styles.screenContainer}>
       <View style={styles.loginInsideContainer}>
         <Text style={styles.companyText}>Your Company Info</Text>
         <View style={styles.inputContainer}>
           <Pressable onPress={pickImage} style={styles.pickLogo}>
-            <Octicons name="image" size={44} color="black" />
-            <TextInput placeholder="Company Logo" style={styles.input} />
+            {company.companylogo ? (
+              <Image
+                source={{ uri: company.companylogo }}
+                style={styles.imagePreview}
+              />
+            ) : (
+              <>
+                <Octicons name="image" size={44} color="black" />
+                <Text>Pick a logo</Text>
+              </>
+            )}
           </Pressable>
         </View>
         <View style={styles.companyNameContainer}>
-          <TextInput placeholder="Company name" style={styles.input}  onChangeText={(value)=> inputHandler('companyname',value)}/>
+          <TextInput
+            placeholder="Company name"
+            style={styles.input}
+            value={company.companyname}
+            onChangeText={(value) => inputHandler("companyname", value)}
+          />
           <View style={styles.line}></View>
-          <TextInput placeholder="email@gmail.com" style={styles.input} onChangeText={(value)=> inputHandler('email',value)}/>
-       
+          <TextInput
+            placeholder="Tax Rate"
+            style={styles.input}
+            value={company.taxRate}
+            onChangeText={(value) => inputHandler("taxRate", value)}
+          />
         </View>
-      
+        <View style={styles.companyNameContainer}>
+          <TextInput
+            placeholder="Company phone"
+            style={styles.input}
+            value={company.phone}
+            onChangeText={(value) => inputHandler("phone", value)}
+          />
+          <View style={styles.line}></View>
+          <TextInput
+            placeholder="email@gmail.com"
+            style={styles.input}
+            value={company.email}
+            onChangeText={(value) => inputHandler("email", value)}
+          />
+        </View>
         <View style={styles.inputContainer}>
-          <TextInput placeholder="Address line 1" style={styles.input} onChangeText={(value)=> inputHandler('address1',value)}/>
+          <TextInput
+            placeholder="Address line 1"
+            style={styles.input}
+            value={company.address1}
+            onChangeText={(value) => inputHandler("address1", value)}
+          />
           <View style={styles.line}></View>
-          <TextInput placeholder="Address line 2" style={styles.input}  onChangeText={(value)=> inputHandler('address2',value)}/>
+          <TextInput
+            placeholder="Address line 2"
+            style={styles.input}
+            value={company.address2}
+            onChangeText={(value) => inputHandler("address2", value)}
+          />
         </View>
-        <View >
-        <Input textInputConfig={{
-          onChangeText:(value)=>{inputHandler('taxRate',value)}
-        }}/>
-        </View>
+
         <View style={styles.nextButtonContainer}>
           <Button color="blue" onPress={navigateToAllScreen}>
-            Next
-            <Text><AntDesign name="right" size={24} color="white" /></Text>
+         
+            <Text style={styles.buttonText}>
+                Save <AntDesign name="right" size={24} color="white" />
+            </Text>
           </Button>
         </View>
       </View>
@@ -101,7 +173,7 @@ function inputHandler(key,value){
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    padding:10
+    padding: 10,
   },
   loginInsideContainer: {
     marginTop: 150,
@@ -113,7 +185,6 @@ const styles = StyleSheet.create({
   },
   companyNameContainer: {
     backgroundColor: colors.white,
-
     width: "90%",
     borderRadius: 8,
     justifyContent: "center",
@@ -145,9 +216,19 @@ const styles = StyleSheet.create({
   pickLogo: {
     alignItems: "center",
   },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
   nextButtonContainer: {
     marginTop: 10,
     padding: 20,
   },
+  buttonText:{
+  textAlign:'center'},
+  alignItems:'center'
 });
+
 export default CreateCompany;

@@ -11,9 +11,10 @@ function ModifyInvoice({ route ,navigation}) {
   );
   const invoice = invoiceArray[0];
   const onConfirm =(formData) => {
+    console.log(formData)
     invoiceCtx.updateInvoice(invoiceId, formData);
     updateInvoice(invoiceId, formData);
-    navigation.goBack();
+    navigation.navigate('Previous')
   };
 
   return (

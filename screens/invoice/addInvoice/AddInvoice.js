@@ -14,7 +14,7 @@ function AddInvoice({ navigation }) {
   const onConfirm = async (formData) => {
     const id = await storeInvoice(formData);
     invoiceCtx.addInvoice({ ...formData, id: id });
-    navigation.goBack()
+    navigation.navigate('Previous')
   };
 
   return (

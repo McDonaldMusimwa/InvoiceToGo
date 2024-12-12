@@ -22,7 +22,7 @@ function Modify({ navigation }) {
         invoicenumber={item.invoicenumber}
         subTotal={subTotal}
         status={item.status}
-        customer={item.clientname}
+        customer={item.clientname.name}
         onPressAction={onPressNavigate}
       />
     );

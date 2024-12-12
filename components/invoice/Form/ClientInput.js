@@ -4,8 +4,15 @@ import colors from "../../../const/Colors";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-function ClientInput({ inputHandler,defaultValue }) {
-  const [client, setClient] = useState("");
+const initialState=(defaultValue)=>({
+name:defaultValue?.name ?? "",
+email:defaultValue?.email ??"",
+phone:defaultValue?.phone ??""
+})
+function ClientInput({ inputHandler, defaultValue }) {
+  console.log('default client input' + JSON.stringify(defaultValue))
+  const [client, setClient] = useState(()=>initialState(defaultValue));
+
   const navigation = useNavigation();
   useEffect(() => {
     if (client) inputHandler(client);
@@ -23,7 +30,7 @@ function ClientInput({ inputHandler,defaultValue }) {
         style={styles.clientInputPressable}
       >
         <Text style={styles.clientnameText}>
-          For : {defaultValue? defaultValue : client}
+          For : {client.name}
           {"                                     "}
         </Text>
         <AntDesign name="right" size={20} color="black" />
@@ -39,8 +46,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   clientInputPressable: {
-    alignItems:'center',
-    flexDirection:'row',
+    alignItems: "center",
+    flexDirection: "row",
     paddingVertical: 5,
     paddingHorizontal: 15,
     justifyContent: "space-between",

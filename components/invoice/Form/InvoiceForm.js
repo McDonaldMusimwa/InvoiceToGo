@@ -19,22 +19,23 @@ import dayjs from "dayjs";
 import ClientInput from "./ClientInput";
 import InvoiceElements from "./InvoiceElements";
 import Button from "../../UI/Button";
-
+const initialState = (defaultInvoice) => ({
+  clientname: defaultInvoice?.clientname ?? { name: "", email: "", phone: "" },
+  invoicenumber: defaultInvoice?.invoicenumber ?? "",
+  invoicestatus: defaultInvoice?.invoicestatus ?? "",
+  invoicedate: defaultInvoice?.invoicedate ? dayjs(defaultInvoice.invoicedate) : dayjs(),
+  invoiceelements: defaultInvoice?.invoiceelements ?? [],
+  discount: defaultInvoice?.discount ?? "",
+  tax: defaultInvoice?.taxRate ?? "",
+});
 function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
-  const initialState = {
-    clientname: defaultInvoice ? defaultInvoice.clientname : "",
-    invoicenumber: defaultInvoice ? defaultInvoice.invoicenumber : "",
-    invoicestatus: defaultInvoice ? defaultInvoice.invoicestatus : "",
-    invoicedate: defaultInvoice ? defaultInvoice.invoicedate : dayjs(), // Always initialize as a Day.js object
-    invoiceelements: defaultInvoice ? defaultInvoice.invoiceelements : [],
-    discount: defaultInvoice ? defaultInvoice.discount : "",
-    tax: defaultInvoice ? defaultInvoice.taxRate : "",
-  };
 
   const [modalVisible, setModalVisible] = useState(false);
   //const [clientModal, setClientModal] = useState(false);
-  const [elements, setinvoiceElements] = useState(defaultInvoice? defaultInvoice.invoiceelements :[]);
-  const [invoiceInput, setInvoiceInput] = useState(initialState);
+  const [elements, setinvoiceElements] = useState(
+    defaultInvoice ? defaultInvoice.invoiceelements : []
+  );
+  const [invoiceInput, setInvoiceInput] = useState(() => initialState(defaultInvoice));
   console.log("default data" + JSON.stringify(invoiceInput));
 
   function inputHandler(key, input) {
@@ -49,12 +50,20 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
     setinvoiceElements(elementsArray); // Set state with the latest elements
   }
 
-  function extractClientName(name) {
+  function extractClientName({name,email,phone}) {
+    const client = {
+      name:name,email:email,phone:phone
+    }
+
+    console.log("converted client input" + JSON.stringify(client))
     defaultInvoice
-      ? inputHandler("clientname", defaultInvoice.clientname)
-      : inputHandler("clientname", name);
+      ? inputHandler("clientname", client)
+
+
+
+      : inputHandler("clientname", client);
   }
-  //console.log("Updated elements:", JSON.stringify(elements, null, 2));
+
 
   function validateInputs(inputs) {
     // Check required fields
@@ -94,7 +103,7 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
     console.log("rejected");
     //console.log("Submitting invoice:", formData);
     onSubmitInvoice(formData);
-    setInvoiceInput(initialState);
+    setInvoiceInput(() => initialState(defaultInvoice));
     setinvoiceElements([]);
   }
   //console.log("Current invoicedate:", invoiceInput.invoicedate);
@@ -122,14 +131,11 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
           >
             <Text>Invoice Due</Text>
 
-            {/*  
             <Text style={styles.dateLabel}>
               {invoiceInput.invoicedate
                 ? invoiceInput.invoicedate.format("YYYY-MM-DD")
                 : "No date set"}
             </Text>
-            
-*/}
           </Pressable>
 
           {/* Modal for Date Picker */}
@@ -143,12 +149,12 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
               <View style={styles.dateContainer}>
                 <DateTimePicker
                   mode="single"
-                  /*
+                  
                     date={
                       invoiceInput.invoicedate
                         ? invoiceInput.invoicedate.toDate()
                         : dayjs().toDate()
-                    } */
+                    } 
                   onChange={(params) => {
                     const selectedDate = params.date || dayjs();
                     inputHandler("invoicedate", selectedDate);
@@ -166,7 +172,7 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
         {/* Input for Client Name */}
         <ClientInput
           inputHandler={extractClientName}
-          defaultValue={defaultInvoice ? defaultInvoice.clientname : ""}
+          defaultValue={defaultInvoice ? defaultInvoice.clientname: ""}
         />
 
         <InvoiceElements

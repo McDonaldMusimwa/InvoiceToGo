@@ -5,12 +5,12 @@ import { storeClient } from '../../util/https';
 
 function ManageClient({route,navigation}){
     const selectClient = route.params.client
-    console.log("manage client "+JSON.stringify(selectClient))
+    
 function onSubmitHandler(clientData){
     storeClient(clientData)
 }
     return (<View style={styles.manageClientBackground}>
-       <ManageClientForm defaultValue={selectClient} isEditing={selectClient ? true : false} onSubmitHandler={onSubmitHandler} onCancel={()=>(navigation.goBack())}/>
+       <ManageClientForm defaultValue={selectClient.clientname} isEditing={selectClient ? true : false} onSubmitHandler={onSubmitHandler} onCancel={()=>(navigation.goBack())}/>
         
         </View>)
 }

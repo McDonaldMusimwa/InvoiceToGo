@@ -11,8 +11,8 @@ import {
 import { useState } from "react";
 import colors from "../../../const/Colors";
 import Element from "../Form/Element/Element";
-
-function InvoiceElements(props) {
+import { v4 as uuidv4 } from 'uuid';
+function InvoiceElements(defaultElements,extractElements) {
   const [modalState, setModalState] = useState(false);
   const [elements, setElements] = useState([]);
   const [element, setElement] = useState({
@@ -32,36 +32,41 @@ function InvoiceElements(props) {
   function createElement() {
     const updatedElements = [...elements, element];
     setElements(updatedElements);
-    setElement({ item: "", units: "", costperitem: "" }); // Reset form
-    props.extractElements(updatedElements); // Use the updated array
-    setModalState(false); // Close modal
+    setElement({ item: "", units: "", costperitem: "" });
+    defaultElements.extractElements(updatedElements); // Pass the updated list
+    setModalState(false);
   }
-
+  
+  function deleteElement(id) {
+    const updatedElements = elements.filter((element) => element.id !== id);
+    setElements(updatedElements);
+    defaultElements.extractElements(updatedElements);
+  }
   function calculateElementTotal(total, element) {
     return total + element.units * element.costperitem;
   }
 
-  const elementsToCalculate = props.defaultElements? props.defaultElements : elements
-  const total = elementsToCalculate.reduce(calculateElementTotal, 0);
+  const elementsToCalculate = Array.isArray(defaultElements) ? defaultElements.defaultElements : elements;
+  const total = elementsToCalculate?.reduce(calculateElementTotal, 0) || 0;
+  
 
-  function deleteElement(id) {
-    const updatedElements = elements.filter((element) => element.id !== id);
-    setElements(updatedElements);
-    props.extractElements(updatedElements); // Sync with parent
-  }
   function editElement(id, updatedData) {
     const updatedElements = elements.map((element) =>
       element.id === id ? { ...element, ...updatedData } : element
-    );
+    ); 
+
     setElements(updatedElements);
-    props.extractElements(updatedElements); // Sync with parent
+    defaultElements.extractElements(updatedElements); // Sync with parent
   }
+
+  console.log('defaultElements:', defaultElements);
+  console.log('elements:', elements);
 
   return (
     <View style={styles.inputBackground}>
       {/* Display Added Elements */}
       <FlatList
-        data={props.defaultElements? props.defaultElements : elements}
+        data={defaultElements.defaultElements.length > 0 ? defaultElements.defaultElements : elements}
         nestedScrollEnabled={true}
         keyExtractor={(item, index) => item.id || index.toString()} // Fallback to index if no id
         renderItem={({ item }) => (
@@ -90,7 +95,7 @@ function InvoiceElements(props) {
               placeholder="Item"
               value={element.item}
               onChangeText={(text) => {
-                const id = new Date() + Math.floor(Math.random() * 100);
+                const id =uuidv4();
                 addInvoiceElement("id", id);
                 addInvoiceElement("item", text);
               }}

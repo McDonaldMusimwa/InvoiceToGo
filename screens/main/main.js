@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
-import { useState, useContext,useEffect } from "react";
-import invoices from "../../const/Data";
+import { useState, useContext, useEffect } from "react";
 import { Dimensions } from "react-native";
 import colors from "../../const/Colors";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
@@ -8,31 +7,44 @@ import Octicons from "@expo/vector-icons/Octicons";
 import Button from "../../components/UI/Button";
 import Invoice from "../../components/UI/Invoice";
 import { InvoicesContext } from "../../store/invoices-context";
-import { fetchInvoices } from "../../util/https";
+import { fetchInvoices,fetchCompany } from "../../util/https";
+import LoadingOverLay from "../../components/UI/LoadingOverLay";
 const width = Dimensions.get("window").width;
 
-
 function Main({ navigation }) {
+  const [isFetching, setIsFetching] = useState(false);
   const invoicesCtx = useContext(InvoicesContext);
-  const [filteredInvoices, setFilteredInvoices] = useState(invoicesCtx.invoices);
+  const [filteredInvoices, setFilteredInvoices] = useState(
+    invoicesCtx.invoices
+  );
   const [screen, setScreen] = useState("all");
-
 
   useEffect(() => {
     async function getInvoices() {
       try {
+        setIsFetching(true);
         const invoices = await fetchInvoices();
+        setIsFetching(false);
         invoicesCtx.setInvoices(invoices); // Store as array
-        setFilteredInvoices(invoices);    // Initialize filteredInvoices
+        setFilteredInvoices(invoices); // Initialize filteredInvoices
       } catch (error) {
         console.error("Error fetching invoices: ", error);
       }
     }
+
+    async function getCompany() {
+      try {
+        const response = await fetchCompany();
+        invoicesCtx.setCompany(response[0]);
+        console.log(JSON.stringify(invoicesCtx.company))
+      } catch (error) {
+        console.error("Failed to fetch company:", error);
+      }
+    }
+    getCompany();
+
     getInvoices();
   }, []);
-  
-
-
 
   const navigateHandlers = {
     navigateToUnpaid: () => {
@@ -54,29 +66,32 @@ function Main({ navigation }) {
       setFilteredInvoices(invoicesCtx.invoices);
     },
   };
-  
 
   const renderItem = ({ item }) => {
+    const clientname = item.clientname.name;
+    console.log(clientname);
     const subTotal = item.invoiceelements.reduce((total, inv) => {
       return total + Number(inv.units) * Number(inv.costperitem);
     }, 0);
-  
+
     const onPressNavigate = () => {
       navigation.navigate("Invoicetemplate", { invoiceid: item.id });
     };
-  
+
     return (
       <Invoice
         invoicenumber={item.invoicenumber}
         subTotal={subTotal.toFixed(2)}
         status={item.invoicestatus}
-        customer={item.clientname}
+        customer={clientname}
         onPressAction={onPressNavigate}
       />
     );
   };
-  
 
+  if (isFetching) {
+    <LoadingOverLay />;
+  }
   return (
     <View style={styles.invoicesContainer}>
       <View style={styles.invoicesTop}>
@@ -120,7 +135,7 @@ function Main({ navigation }) {
           }}
           color="blue"
         >
-          Add Job +
+          Add / Edit
         </Button>
       </View>
       <View style={styles.invoicesSection}>
@@ -139,7 +154,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: "absolute",
     bottom: 10,
-   width:'%100',
+    width: "%100",
     zIndex: 100,
     alignItems: "center",
     padding: 10, // Adjust padding as needed

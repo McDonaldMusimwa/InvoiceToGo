@@ -81,20 +81,23 @@ export async function fetchInvoices() {
 }
 
 export function updateInvoice(invoiceid, invoiceData) {
-  try{
-    return axios.put(`https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices/${invoiceid}.json`,invoiceData)
-
-  }catch(error){
-    console.error("error modifying", error)
+  try {
+    return axios.put(
+      `https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices/${invoiceid}.json`,
+      invoiceData
+    );
+  } catch (error) {
+    console.error("error modifying", error);
   }
 }
 
 export async function deleteExpense(invoiceid) {
-  try{
-   return axios.delete(`https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices/${invoiceid}.json`)
-
-  }catch(error){
-    console.error("error deleting" , error)
+  try {
+    return axios.delete(
+      `https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices/${invoiceid}.json`
+    );
+  } catch (error) {
+    console.error("error deleting", error);
   }
 }
 
@@ -109,8 +112,25 @@ export async function storeClient(clientData) {
     console.error("Error storing client:", error);
   }
 }
-export async function updateClient(clientid, clientData) {}
-export async function deleteClient(clientid) {}
+export async function updateClient(clientid, clientData) {
+  try {
+    return axios.put(
+      `https://invoicetogo-54bf5-default-rtdb.firebaseio.com/clients/${clientid}.json`,
+      clientData
+    );
+  } catch (error) {
+    console.error("error modifying", error);
+  }
+}
+export async function deleteClient(clientid) {
+  try {
+    return axios.delete(
+      `https://invoicetogo-54bf5-default-rtdb.firebaseio.com/clients/${clientid}.json`
+    );
+  } catch (error) {
+    console.error("error delete", error);
+  }
+}
 export async function fetchClients() {
   try {
     const response = await axios.get(
@@ -131,8 +151,25 @@ export async function fetchClients() {
 }
 /* Company Logic */
 
-export async function updateCompany(companyId, companyData) {}
-export async function deleteCompany(companyid) {}
+export async function updateCompany(companyId, companyData) {
+  try {
+    return axios.put(
+      `https://invoicetogo-54bf5-default-rtdb.firebaseio.com/companies/${companyId}.json`,
+      companyData
+    );
+  } catch (error) {
+    console.error("error modifying", error);
+  }
+}
+export async function deleteCompany(companyid) {
+  try {
+    return axios.delete(
+      `https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices/${companyid}.json`
+    );
+  } catch (error) {
+    console.error("error deleting", error);
+  }
+}
 export async function storeCompany(companyData) {
   try {
     await axios.post(

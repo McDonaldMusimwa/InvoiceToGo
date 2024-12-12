@@ -29,7 +29,7 @@ function ClientInput({ navigation }) {
       }
     }
     getClients();
-  }, [clientCtx.clients]);
+  }, []);
 
   function selectHandler(id) {
     const selectedClient = clientCtx.clients.find((client) => client.id === id);
