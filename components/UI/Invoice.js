@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import colors from "../../const/Colors";
 import Card from "./Card";
 
-function Invoice({ invoicenumber, status, subTotal, customer, onPressAction }) {
+function Invoice({ invoicenumber, status, subTotal, customer, onPressAction,onLongPressAction }) {
   let statusFontStyle;
 
   if (status === "paid") {
@@ -15,7 +15,7 @@ function Invoice({ invoicenumber, status, subTotal, customer, onPressAction }) {
 
   return (
     <Card>
-      <Pressable style={styles.buttonStyle} onPress={onPressAction}>
+      <Pressable style={styles.buttonStyle} onPress={onPressAction} onLongPress={onLongPressAction}>
         <View style={styles.spacing}>
           <View style={styles.status}>
             <Text style={[styles.fontweight, styles.fontsize]}>

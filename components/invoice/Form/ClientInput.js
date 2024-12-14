@@ -9,21 +9,30 @@ name:defaultValue?.name ?? "",
 email:defaultValue?.email ??"",
 phone:defaultValue?.phone ??""
 })
-function ClientInput({ inputHandler, defaultValue }) {
-  console.log('default client input' + JSON.stringify(defaultValue))
-  const [client, setClient] = useState(()=>initialState(defaultValue));
 
+
+function ClientInput({ inputHandler, defaultValue }) {
+ if(defaultValue){ console.log('default client input' + JSON.stringify(defaultValue))}
+  const [client, setClient] = useState(()=>initialState(defaultValue));
+console.log("selected client" + JSON.stringify(client))
   const navigation = useNavigation();
+
   useEffect(() => {
     if (client) inputHandler(client);
   }, [client]);
+
   return (
     <View style={styles.inputBackground}>
       <Pressable
         onPress={() => {
           navigation.navigate("Selectclient", {
             onGoBack: (clientData) => {
-              setClient(clientData);
+              const client ={
+                name:clientData.clientname,
+                phone:clientData.clientphone,
+                email:clientData.clientemail
+              }
+              setClient(client);
             },
           });
         }}

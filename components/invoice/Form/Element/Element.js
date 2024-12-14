@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import colors from "../../../../const/Colors";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import AntDesign from '@expo/vector-icons/AntDesign';
+
 
 function Element({ units, item, costperitem ,deleteElement,id,modifyElement,openModalEdit}) {
   return (

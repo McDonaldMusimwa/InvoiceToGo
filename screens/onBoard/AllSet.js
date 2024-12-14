@@ -15,7 +15,7 @@ function AllSet({ navigation }) {
       </View>
       <Text style={styles.allsettextheader}>All set up</Text>
       <Text style={[styles.allsettext]}>
-        You are ready to create your first invoice
+        You are ready to create your invoices
       </Text>
       <View style={styles.buttonContainer}>
       <Button color="blue" onPress={navigateToCreateInvoice}>Create Invoice</Button>

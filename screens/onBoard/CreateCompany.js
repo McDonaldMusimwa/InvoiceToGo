@@ -16,6 +16,7 @@ import Input from "../../components/invoice/Form/Input";
 import colors from "../../const/Colors";
 import { fetchCompany, storeCompany } from "../../util/https";
 import { InvoicesContext } from "../../store/invoices-context";
+import { AuthContext } from "../../store/auth-context";
 
 const initialState = (defaultCompany) => ({
   companylogo: defaultCompany?.companylogo || "",
@@ -68,6 +69,7 @@ function CreateCompany({ navigation }) {
   };
 
   const navigateToAllScreen = async () => {
+    const authCtx = useContext(AuthContext)
     const companyData = {
       email: company.email,
       companylogo: company.companylogo,
@@ -76,6 +78,7 @@ function CreateCompany({ navigation }) {
       address2: company.address2,
       phone: company.companyphone,
       companyname: company.companyname,
+      owner:authCtx.userData
     };
     setIsLoading(true);
     try {

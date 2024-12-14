@@ -12,7 +12,8 @@ function SelectClient() {
   const navigation = useNavigation();
 
   function selectHandler(id) {
-    const selectedClient = clients.find((client) => client.id === id);
+    const selectedClient = clientCtx.clients.find((client) => client.id === id);
+
     route.params.onGoBack(selectedClient);
     navigation.goBack();
   }

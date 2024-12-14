@@ -11,10 +11,12 @@ import {
 import { useState } from "react";
 import colors from "../../../const/Colors";
 import Element from "../Form/Element/Element";
-import { v4 as uuidv4 } from 'uuid';
+
 function InvoiceElements(defaultElements,extractElements) {
+
+  console.log("dafault elements" + JSON.stringify(defaultElements))
   const [modalState, setModalState] = useState(false);
-  const [elements, setElements] = useState([]);
+  const [elements, setElements] = useState(defaultElements? defaultElements.defaultElements :[]);
   const [element, setElement] = useState({
     id: "",
     item: "",
@@ -58,10 +60,10 @@ function InvoiceElements(defaultElements,extractElements) {
     setElements(updatedElements);
     defaultElements.extractElements(updatedElements); // Sync with parent
   }
-
+/*
   console.log('defaultElements:', defaultElements);
   console.log('elements:', elements);
-
+*/
   return (
     <View style={styles.inputBackground}>
       {/* Display Added Elements */}
@@ -95,7 +97,13 @@ function InvoiceElements(defaultElements,extractElements) {
               placeholder="Item"
               value={element.item}
               onChangeText={(text) => {
-                const id =uuidv4();
+                const id = function() {
+                  return Math.random()
+                    .toString(36)
+                    .substr(2, 6);
+                };
+
+
                 addInvoiceElement("id", id);
                 addInvoiceElement("item", text);
               }}

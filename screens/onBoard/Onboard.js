@@ -3,19 +3,20 @@ import colors from "../../const/Colors";
 import invoicestack from "../../assets/invoicestack.png";
 import Button from "../../components/UI/Button";
 import FlatButton from "../../components/UI/FlatButton";
+import WhiteInvoice  from '../../assets/invoicewhite.png'
 
 function Onboard({ navigation }) {
   function navigateToLogin() {
     navigation.navigate("Login");
   }
   function navigateToCreateCompany() {
-    navigation.navigate("CreateCompany");
+    navigation.navigate("SignUp");
   }
   return (
     <View style={styles.onBoardContainer}>
       <View style={styles.imageContainer}>
         <Image
-          source={require("../../assets/electricbill.png")}
+          source={WhiteInvoice}
           style={{ width: 400, height: 400, resizeMode: "fill" }}
           alt="Invoice Stack"
         />

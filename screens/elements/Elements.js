@@ -14,6 +14,11 @@ function Elements({navigation}) {
           <Text style={styles.text}>Account</Text>
         </Pressable>
       </Card>
+      <Card>
+      <Pressable style={styles.component} onPress={()=>navigation.navigate("Analytics")}>
+      <Text style={styles.text}>Analytics DashBoard</Text>
+      </Pressable>
+      </Card>
     </View>
   );
 }

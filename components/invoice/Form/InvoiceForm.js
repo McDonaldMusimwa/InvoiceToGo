@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import ClientInput from "./ClientInput";
 import InvoiceElements from "./InvoiceElements";
 import Button from "../../UI/Button";
+import { useNavigation } from "@react-navigation/native";
 const initialState = (defaultInvoice) => ({
   clientname: defaultInvoice?.clientname ?? { name: "", email: "", phone: "" },
   invoicenumber: defaultInvoice?.invoicenumber ?? "",
@@ -29,7 +30,7 @@ const initialState = (defaultInvoice) => ({
   tax: defaultInvoice?.taxRate ?? "",
 });
 function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
-
+const navigation = useNavigation()
   const [modalVisible, setModalVisible] = useState(false);
   //const [clientModal, setClientModal] = useState(false);
   const [elements, setinvoiceElements] = useState(
@@ -105,6 +106,7 @@ function InvoiceForm({ isEditing, defaultInvoice, onSubmitInvoice }) {
     onSubmitInvoice(formData);
     setInvoiceInput(() => initialState(defaultInvoice));
     setinvoiceElements([]);
+navigation.navigate('Previous')
   }
   //console.log("Current invoicedate:", invoiceInput.invoicedate);
 

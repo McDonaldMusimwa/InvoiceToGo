@@ -26,16 +26,20 @@ const [logoBase64,setBase64Logo] = useState()
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(1);
   const invoiceCtx = useContext(InvoicesContext);
+
+
   const fetchedCompany = invoiceCtx.company
     ? invoiceCtx.company
     : async () => await fetchCompany();
   const company = fetchedCompany[0];
-  console.log("company data" + JSON.stringify(company));
+
   const invId = route.params.invoiceid;
 
   const invoiceData = invoiceCtx.invoices.find(
-    (invoice) => (invoice.id = invId)
+    (invoice) => (invoice.id === invId)
   );
+console.log("fetched company "+fetchedCompany)
+
 
 
   // UseEffect hook to fetch base64 image when company data is available
@@ -49,6 +53,7 @@ const [logoBase64,setBase64Logo] = useState()
     
     fetchLogo();
   }, [invoiceCtx.company]);
+
   const htmlContent = `
   <html lang="en">
 <head>

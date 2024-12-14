@@ -7,17 +7,20 @@ import Octicons from "@expo/vector-icons/Octicons";
 import Button from "../../components/UI/Button";
 import Invoice from "../../components/UI/Invoice";
 import { InvoicesContext } from "../../store/invoices-context";
-import { fetchInvoices,fetchCompany } from "../../util/https";
+import { fetchInvoices, fetchCompany } from "../../util/https";
 import LoadingOverLay from "../../components/UI/LoadingOverLay";
+import { AuthContext } from "../../store/auth-context";
 const width = Dimensions.get("window").width;
 
 function Main({ navigation }) {
+  const [notifications, setNotifications] = useState();
   const [isFetching, setIsFetching] = useState(false);
   const invoicesCtx = useContext(InvoicesContext);
   const [filteredInvoices, setFilteredInvoices] = useState(
     invoicesCtx.invoices
   );
   const [screen, setScreen] = useState("all");
+  const authCtx = useContext(AuthContext)
 
   useEffect(() => {
     async function getInvoices() {
@@ -36,7 +39,7 @@ function Main({ navigation }) {
       try {
         const response = await fetchCompany();
         invoicesCtx.setCompany(response[0]);
-        console.log(JSON.stringify(invoicesCtx.company))
+
       } catch (error) {
         console.error("Failed to fetch company:", error);
       }
@@ -69,11 +72,12 @@ function Main({ navigation }) {
 
   const renderItem = ({ item }) => {
     const clientname = item.clientname.name;
-    console.log(clientname);
+
     const subTotal = item.invoiceelements.reduce((total, inv) => {
       return total + Number(inv.units) * Number(inv.costperitem);
     }, 0);
 
+  
     const onPressNavigate = () => {
       navigation.navigate("Invoicetemplate", { invoiceid: item.id });
     };
@@ -92,11 +96,28 @@ function Main({ navigation }) {
   if (isFetching) {
     <LoadingOverLay />;
   }
+
+  const invoicesDueIn7Days = () => {
+    const today = new Date();
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(today.getDate() + 7);
+
+    return filteredInvoices.filter((invoice) => {
+      const invoiceDate = new Date(invoice.invoicedate);
+      return (
+        !isNaN(invoiceDate) &&
+        invoiceDate > today &&
+        invoiceDate <= sevenDaysFromNow
+      );
+    });
+  };
+  const newOne = invoicesDueIn7Days();
+  console.log(newOne);
   return (
     <View style={styles.invoicesContainer}>
       <View style={styles.invoicesTop}>
-        <Pressable onPress={() => navigation.navigate("Settings")}>
-          <SimpleLineIcons name="settings" size={24} color="black" />
+        <Pressable onPress={() => authCtx.logOut()}>
+          <SimpleLineIcons name="logout" size={24} color="black" />
         </Pressable>
 
         <Octicons name="search" size={24} color="black" />
