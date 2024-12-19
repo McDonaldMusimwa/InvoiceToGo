@@ -33,13 +33,20 @@ function CreateCompany({ navigation }) {
   const [company, setCompany] = useState(() => initialState(null));
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false); // Track readiness to render the form
+  const authCtx = useContext(AuthContext);
 
   useEffect(() => {
     async function getCompany() {
       try {
         const response = await fetchCompany();
-        companyCtx.setCompany(response);
-        setCompany(initialState(response[0])); // Use the first company object
+        companyCtx.setCompany(
+          response.filter((company) => company.owner === authCtx.userData)
+        );
+        setCompany(
+          initialState(
+            response.filter((company) => company.owner === authCtx.userData)
+          )
+        ); // Use the first company object
         setIsReady(true); // Mark the form as ready
       } catch (error) {
         console.error("Failed to fetch company:", error);
@@ -69,7 +76,6 @@ function CreateCompany({ navigation }) {
   };
 
   const navigateToAllScreen = async () => {
-    const authCtx = useContext(AuthContext)
     const companyData = {
       email: company.email,
       companylogo: company.companylogo,
@@ -78,7 +84,7 @@ function CreateCompany({ navigation }) {
       address2: company.address2,
       phone: company.companyphone,
       companyname: company.companyname,
-      owner:authCtx.userData
+      owner: authCtx.userData,
     };
     setIsLoading(true);
     try {
@@ -162,9 +168,8 @@ function CreateCompany({ navigation }) {
 
         <View style={styles.nextButtonContainer}>
           <Button color="blue" onPress={navigateToAllScreen}>
-         
             <Text style={styles.buttonText}>
-                Save <AntDesign name="right" size={24} color="white" />
+              Save <AntDesign name="right" size={24} color="white" />
             </Text>
           </Button>
         </View>
@@ -229,9 +234,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 20,
   },
-  buttonText:{
-  textAlign:'center'},
-  alignItems:'center'
+  buttonText: {
+    textAlign: "center",
+  },
+  alignItems: "center",
 });
 
 export default CreateCompany;

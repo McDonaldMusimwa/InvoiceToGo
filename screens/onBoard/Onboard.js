@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import colors from "../../const/Colors";
 import invoicestack from "../../assets/invoicestack.png";
 import Button from "../../components/UI/Button";
@@ -26,9 +26,11 @@ function Onboard({ navigation }) {
         Create Professional invoices in just seconds
       </Text>
       <Button onPress={navigateToCreateCompany}>Start your work</Button>
+      <Pressable onPress={navigateToLogin}>
+      <Text style={styles.loginText}>Already have an account ? Login</Text>
+      </Pressable>
       <Text style={styles.loginText}>
-        Already have an account ?{" "}
-        <FlatButton onPress={navigateToLogin}>Login</FlatButton>
+       
       </Text>
     </View>
   );
@@ -60,11 +62,14 @@ const styles = StyleSheet.create({
     color: colors.white,
     marginHorizontal: 20,
     marginTop: 10,
-    fontSize: 20,
+    fontSize: 25,
     textAlign: "center",
     justifyContent: "center",
     paddingVertical: 10,
   },
+  buttonText:{
+    fontSize:40
+  }
 });
 
 export default Onboard;

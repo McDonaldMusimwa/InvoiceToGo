@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Pressable,
   Dimensions,
-  Image,
+  Image,Platform
 } from "react-native";
 import { useContext, useState,useEffect } from "react";
 import { InvoicesContext } from "../../../store/invoices-context";
@@ -277,7 +277,7 @@ console.log("fetched company "+fetchedCompany)
       </View>
       <View style={styles.sendButton}>
         <Pressable onPress={() => generatePDF()}>
-          <Feather name="send" size={36} color="black" />
+          {Platform == 'ios'? <Feather name="send" size={36} color="black" /> : <Text style={styles.sendText}>Send Invoice</Text>}
         </Pressable>
       </View>
     </View>
@@ -285,6 +285,7 @@ console.log("fetched company "+fetchedCompany)
 }
 
 const styles = StyleSheet.create({
+  sendText:{padding:10},
   sendButton: {
     borderWidth: 1,
     borderRadius: 80,

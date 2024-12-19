@@ -5,7 +5,7 @@ import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
 import InvoiceForm from "../../../components/invoice/Form/InvoiceForm";
 import { InvoicesContext } from "../../../store/invoices-context";
-
+import { triggerNotification } from "../../../App";
 import { useRoute } from "@react-navigation/native";
 import { storeInvoice } from "../../../util/https";
 function AddInvoice({ navigation }) {
@@ -14,6 +14,7 @@ function AddInvoice({ navigation }) {
   const onConfirm = async (formData) => {
     const id = await storeInvoice(formData);
     invoiceCtx.addInvoice({ ...formData, id: id });
+    triggerNotification()
     navigation.navigate('Previous')
   };
 

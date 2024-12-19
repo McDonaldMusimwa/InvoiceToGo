@@ -3,6 +3,8 @@ import Input from "../invoice/Form/Input";
 import { useState } from "react";
 import Button from "../UI/Button";
 import colors from "../../const/Colors";
+import { useContext } from "react";
+import { AuthContext } from "../../store/auth-context";
 
 function ManageClientForm({
   onCancel,
@@ -17,7 +19,7 @@ function ManageClientForm({
     comments: defaultValue? defaultValue.comments : "",
   };
   const [input, setInputHandler] = useState(initialInputState);
-
+const authCtx = useContext(AuthContext)
   function inputHandler(key, incomingInput) {
     setInputHandler((currentState) => {
       return {
@@ -45,6 +47,7 @@ function ManageClientForm({
       clientphone: input.clientphone,
       clientemail: input.clientemail,
       comments: input.comments,
+      user:authCtx.userData
     };
     onSubmitHandler(submitData);
     setInputHandler(initialInputState)

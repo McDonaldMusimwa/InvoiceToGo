@@ -13,14 +13,15 @@ import { AuthContext } from "../../store/auth-context";
 const width = Dimensions.get("window").width;
 
 function Main({ navigation }) {
+  const authCtx = useContext(AuthContext)
   const [notifications, setNotifications] = useState();
   const [isFetching, setIsFetching] = useState(false);
   const invoicesCtx = useContext(InvoicesContext);
   const [filteredInvoices, setFilteredInvoices] = useState(
-    invoicesCtx.invoices
+    invoicesCtx.invoices.filter(invoice=> invoice.user === authCtx.userData)
   );
   const [screen, setScreen] = useState("all");
-  const authCtx = useContext(AuthContext)
+  
 
   useEffect(() => {
     async function getInvoices() {

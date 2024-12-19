@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Dropdown from "react-native-input-select";
 import { taxRate } from "../../../const/Data";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import colors from "../../../const/Colors";
 import DateTimePicker from "react-native-ui-datepicker";
 import dayjs from "dayjs";
@@ -20,6 +20,7 @@ import ClientInput from "./ClientInput";
 import InvoiceElements from "./InvoiceElements";
 import Button from "../../UI/Button";
 import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../../../store/auth-context";
 const initialState = (defaultInvoice) => ({
   clientname: defaultInvoice?.clientname ?? { name: "", email: "", phone: "" },
   invoicenumber: defaultInvoice?.invoicenumber ?? "",
@@ -37,7 +38,7 @@ const navigation = useNavigation()
     defaultInvoice ? defaultInvoice.invoiceelements : []
   );
   const [invoiceInput, setInvoiceInput] = useState(() => initialState(defaultInvoice));
-  console.log("default data" + JSON.stringify(invoiceInput));
+  const authCtx = useContext(AuthContext)
 
   function inputHandler(key, input) {
     setInvoiceInput((prevState) => ({
@@ -99,6 +100,7 @@ const navigation = useNavigation()
       invoiceelements: elements,
       tax: taxAmount.toFixed(2),
       balancedue: total.toFixed(2),
+      user:authCtx.userData
     };
 
     console.log("rejected");

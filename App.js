@@ -18,10 +18,19 @@ import Invoicetemplate from "./components/invoice/Ui/Invoicetemplate";
 import SignUp from "./screens/onBoard/SignUp";
 import colors from "./const/Colors";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
-import { useContext } from "react";
+import { useContext,useEffect } from "react";
 import DashBoard from "./screens/Analytics/Dashboard";
+import * as Notifications from 'expo-notifications';
+
 //import InvoiceForm from './components/invoice/InvoiceForm'
 const Stack = createNativeStackNavigator();
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 function AuthStack() {
   return (
@@ -129,6 +138,15 @@ function AuthenticatedStack() {
     </InvoicesContectProvider>
   );
 }
+export const triggerNotification = async () => {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Test Notification",
+      body: "This is a test notification!",
+    },
+    trigger: { seconds: 2 }, // Schedule after 2 seconds
+  });
+};
 
 function Navigation() {
   const authCtx = useContext(AuthContext);
@@ -140,7 +158,20 @@ function Navigation() {
   );
 }
 export default function App() {
-  const Stack = createNativeStackNavigator();
+  useEffect(() => {
+    async function getPermissions() {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      if (status !== 'granted') {
+        alert('You need to enable permissions for notifications.');
+        return;
+      }
+    }
+
+    getPermissions();
+  }, []);
+
+
+
 
   return (
     <>

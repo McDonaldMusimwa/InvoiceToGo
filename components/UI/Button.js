@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import colors from "../../const/Colors";
 
-function Button({ children, onPress, color }) {
+function Button({ children, onPress, color,style }) {
   return (
     <Pressable
       onPress={onPress}
@@ -17,7 +17,7 @@ function Button({ children, onPress, color }) {
         <Text
           style={[
             styles.buttonText,
-            color === "blue" ? styles.whiteText : "null",
+            color === "blue" ? styles.whiteText : "null",style
           ]}
         >
           {children}
