@@ -6,7 +6,7 @@ const API_KEY = process.env.EXPO_PUBLIC_API_FIREBASE;
 
 async function authenticate(mode, email, password) {
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${API_KEY}`;
-  console.log(API_KEY)
+
   try {
     const res = await axios.post(url, {
       email: email,
@@ -31,14 +31,14 @@ async function authenticate(mode, email, password) {
 
 // Signup handler
 export async function createUser(userEmail, userPassword) {
-  console.log("API KEY" + API_KEY)
+  //console.log("API KEY" + API_KEY)
   const res = await authenticate("signUp", userEmail, userPassword);
   return res
 }
 
 // Login handler
 export async function loginUser(userEmail, userPassword) {
-  console.log("API KEY" + API_KEY)
+  //console.log("API KEY" + API_KEY)
   const res = await authenticate("signInWithPassword", userEmail, userPassword);
 
   return res

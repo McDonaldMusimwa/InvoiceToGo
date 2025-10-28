@@ -24,22 +24,31 @@ function Main({ navigation }) {
   
 
   useEffect(() => {
+    const userToken = authCtx.token
     async function getInvoices() {
       try {
         setIsFetching(true);
-        const invoices = await fetchInvoices();
+        const invoices = await fetchInvoices(userToken);
+
         setIsFetching(false);
         invoicesCtx.setInvoices(invoices); // Store as array
         setFilteredInvoices(invoices); // Initialize filteredInvoices
+
+
       } catch (error) {
         console.error("Error fetching invoices: ", error);
       }
     }
 
     async function getCompany() {
+      const token = authCtx.token;
+      const user = authCtx.userData;
       try {
-        const response = await fetchCompany();
-        invoicesCtx.setCompany(response[0]);
+        const response = await fetchCompany(token);
+        console.log("companies = >" +response)
+        const company = response.filter((companie)=> companie.owner === user)
+        console.log("company is" +JSON.stringify(company) + "Owner is "  + user)
+        invoicesCtx.setCompany(company);
 
       } catch (error) {
         console.error("Failed to fetch company:", error);

@@ -22,10 +22,11 @@ export async function storeInvoice(invoiceData) {
   }
 }
 
-export async function fetchInvoices() {
+export async function fetchInvoices(token) {
+  console.log("user token =>" +token);
   try {
     const response = await axios.get(
-      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices.json"
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices.json?auth="+token
     );
 
     const invoices = [];
@@ -181,12 +182,12 @@ export async function storeCompany(companyData) {
   }
 }
 
-export async function fetchCompany() {
+export async function fetchCompany(token) {
   try {
     const response = await axios.get(
-      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/companies.json"
+      "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/companies.json?auth="+token
     );
-
+    console.log("companies" + JSON.stringify(response.data[0]))
     return mapFirebaseResponse(response.data, (key, companyData) => ({
       id: key,
       ...companyData,

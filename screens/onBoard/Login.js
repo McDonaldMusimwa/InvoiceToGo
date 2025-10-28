@@ -43,7 +43,7 @@ function Login({ navigation }) {
 
     try {
       const token = await loginUser(email, password); // Make sure createUser returns a promise
-      console.log("response "+ JSON.stringify(token))
+      console.log("response login screen response =>"+ JSON.stringify(token))
       authCtx.authenticate(token.idToken);
       authCtx.storeUserData(token.userEmail)
       

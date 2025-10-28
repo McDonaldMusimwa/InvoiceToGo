@@ -14,6 +14,7 @@ function AuthContextProvider({children}){
     const [authToken,setAuthToken]= useState()
     const [userData,setUserData]= useState("")
 
+    console.log(userData);
     function storeUserData(userEmail){
         setUserData(userEmail)
     }
