@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
 import { useState, useContext, useEffect } from "react";
 import { Dimensions } from "react-native";
-import colors from "../../const/Colors";
+import colors from "../../../const/Colors";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Octicons from "@expo/vector-icons/Octicons";
 import Button from "../../components/UI/Button";

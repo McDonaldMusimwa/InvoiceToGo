@@ -1,8 +1,10 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import colors from "../../const/Colors";
 import Card from "./Card";
+import type { Invoice } from "../../types/Invoice";
+import React from "react";
 
-function Invoice({ invoicenumber, status, subTotal, customer, onPressAction,onLongPressAction }) {
+function Invoice({ invoicenumber, status, subTotal, customer, onPressAction,onLongPressAction }:Invoice):React.JSX.Element {
   let statusFontStyle;
 
   if (status === "paid") {

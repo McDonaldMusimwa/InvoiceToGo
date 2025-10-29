@@ -1,23 +1,24 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, Pressable, StyleProp, ViewStyle, TextStyle } from "react-native";
 import colors from "../../const/Colors";
+import type { ButtonProps } from "../../types/Button";
 
-function Button({ children, onPress, color,style }) {
+const Button: React.FC<ButtonProps> = ({ children, onPress, color = "default", style }) => {
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => (pressed ? styles.pressed : "null")}
+      style={({ pressed }): StyleProp<ViewStyle> => [
+        styles.buttonContainer,
+        color === "blue" && styles.blueButton,
+        pressed && styles.pressed,
+      ]}
     >
-      <View
-        style={[
-          styles.buttonContainer,
-          color === "blue" ? styles.blueButton : "null",
-        ]}
-        onPress={onPress}
-      >
+      <View>
         <Text
           style={[
             styles.buttonText,
-            color === "blue" ? styles.whiteText : "null",style
+            color === "blue" && styles.whiteText,
+            style as StyleProp<TextStyle>,
           ]}
         >
           {children}
@@ -25,7 +26,9 @@ function Button({ children, onPress, color,style }) {
       </View>
     </Pressable>
   );
-}
+};
+
+export default Button;
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -33,7 +36,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     padding: 20,
     width: "100%",
-
     justifyContent: "center",
   },
   blueButton: {
@@ -52,4 +54,3 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
 });
-export default Button;
