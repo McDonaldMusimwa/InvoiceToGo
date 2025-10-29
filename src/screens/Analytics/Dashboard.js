@@ -220,3 +220,4 @@ const styles = StyleSheet.create({
   },
 });
 export default DashBoard;
+[0.030999998953,0,0.224000010771,1]

@@ -23,7 +23,7 @@ export async function storeInvoice(invoiceData) {
 }
 
 export async function fetchInvoices(token) {
-  console.log("user token =>" +token);
+  //console.log("user token =>" +token);
   try {
     const response = await axios.get(
       "https://invoicetogo-54bf5-default-rtdb.firebaseio.com/invoices.json?auth="+token

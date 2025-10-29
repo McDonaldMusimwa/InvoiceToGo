@@ -24,15 +24,15 @@ Follow the prompts on the terminal to scan the QR code with your phone.
 Screens  
 
 ### Onboarding Screen
-![On board Screen](assets/onboardscreen.jpg "a title")
+![On board Screen](src/assets/onboardscreen.jpg "a title")
 
 ### Login screen
-![Login Scree](assets/login.jpg "login screen")
+![Login Scree](src/assets/login.jpg "login screen")
 
 ### Home Screen
-![Home Screeb](assets/invoices.jpg "home screen") 
+![Home Screeb](src/assets/invoices.jpg "home screen") 
 ### View Invoice Screen 
-![View Invoice](assets/viewinvoice.jpg "View Invoice")
+![View Invoice](src/assets/viewinvoice.jpg "View Invoice")
 
 ### Invoice Pdf share Screen 
-![View Invoice](assets/invoicepdf.jpg "View Invoice")
+![View Invoice](src/assets/invoicepdf.jpg "View Invoice")

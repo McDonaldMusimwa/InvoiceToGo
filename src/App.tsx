@@ -21,6 +21,7 @@ import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import { useContext,useEffect } from "react";
 import DashBoard from "./screens/Analytics/Dashboard";
 import * as Notifications from 'expo-notifications';
+import React from "react";
 
 //import InvoiceForm from './components/invoice/InvoiceForm'
 const Stack = createNativeStackNavigator();
@@ -32,7 +33,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-function AuthStack() {
+function AuthStack():React.JSX.Element {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -70,7 +71,7 @@ function AuthStack() {
   );
 }
 
-function AuthenticatedStack() {
+function AuthenticatedStack():React.JSX.Element {
   return (
     <InvoicesContectProvider>
       <Stack.Navigator
